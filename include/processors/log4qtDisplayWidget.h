@@ -32,7 +32,7 @@ private:
 class LOG4QTSHARED_EXPORT log4qtDisplayWidget : public log4qt::impl::ILogProcessorWidget<QTableView>
 {
     Q_OBJECT
-    // message with level under filter will not be processed, default is Information
+    // message with level under filter will not be processed, default is Infomation
     Q_PROPERTY(int filter READ filter WRITE setFilter)
     // max count to be shown(before filter), default is 10000
     Q_PROPERTY(int maxCount READ maxCount WRITE setMaxCount)
