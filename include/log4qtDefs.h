@@ -21,29 +21,40 @@ namespace impl {
 struct LogMessage;
 
 // patterns for formating log message
-static const QString DateTime = QStringLiteral("%{datetime}");
-static const QString Type = QStringLiteral("%{type}");
-static const QString Level = QStringLiteral("%{level}");
-static const QString PID = QStringLiteral("%{pid}");
-static const QString ThreadId = QStringLiteral("%{threadid}");
-static const QString ThreadPtr = QStringLiteral("%{qthreadptr}");
-static const QString File = QStringLiteral("%{file}");
-static const QString Line = QStringLiteral("%{line}");
-static const QString Function = QStringLiteral("%{function}");
-static const QString Message = QStringLiteral("%{message}");
+static const QString PatternDateTime = QStringLiteral("%{datetime}");
+static const QString PatternType = QStringLiteral("%{type}");
+static const QString PatternLevel = QStringLiteral("%{level}");
+static const QString PatternPID = QStringLiteral("%{pid}");
+static const QString PatternThreadId = QStringLiteral("%{threadid}");
+static const QString PatternThreadPtr = QStringLiteral("%{qthreadptr}");
+static const QString PatternFile = QStringLiteral("%{file}");
+static const QString PatternLine = QStringLiteral("%{line}");
+static const QString PatternFunction = QStringLiteral("%{function}");
+static const QString PatternMessage = QStringLiteral("%{message}");
 static const QString DefaultPattern = QStringLiteral("%1 %2(%3) %4:%5 %6:%7 %8 - %9")
-                                      .arg(DateTime)
-                                      .arg(Type)
-                                      .arg(Level)
-                                      .arg(PID)
-                                      .arg(ThreadId)
-                                      .arg(File)
-                                      .arg(Line)
-                                      .arg(Function)
-                                      .arg(Message);
-
-// parse the message pattern, combine LogMessage into return text
-QString LOG4QTSHARED_EXPORT processMessage(const QString& pattern, const QSharedPointer<LogMessage>& message);
+                                      .arg(PatternDateTime)
+                                      .arg(PatternType)
+                                      .arg(PatternLevel)
+                                      .arg(PatternPID)
+                                      .arg(PatternThreadId)
+                                      .arg(PatternFile)
+                                      .arg(PatternLine)
+                                      .arg(PatternFunction)
+                                      .arg(PatternMessage);
+static const QString PlaceHolderDateTime = QStringLiteral("%{D}");
+static const QString PlaceHolderType = QStringLiteral("%{T}");
+static const QString PlaceHolderLevel = QStringLiteral("%{V}");
+static const QString PlaceHolderPID = QStringLiteral("%{P}");
+static const QString PlaceHolderThreadId = QStringLiteral("%{I}");
+static const QString PlaceHolderThreadPtr = QStringLiteral("%{H}");
+static const QString PlaceHolderFile = QStringLiteral("%{F}");
+static const QString PlaceHolderLine = QStringLiteral("%{L}");
+static const QString PlaceHolderFunction = QStringLiteral("%{N}");
+static const QString PlaceHolderMessage = QStringLiteral("%{M}");
+// parse the message pattern, refactor to internal syntax and return it
+LOG4QTSHARED_EXPORT QString& parsePattern(QString& pattern);
+// combine LogMessage into return text base on parsed pattern
+LOG4QTSHARED_EXPORT QString processMessage(const QString& parsedPattern, const QSharedPointer<LogMessage>& message);
 
 // log type, calculated by LogLevel
 enum LogType
@@ -56,9 +67,9 @@ enum LogType
 };
 static const int DefaultFilter = LogType::Infomation;
 // get LogType by input log level
-LogType LOG4QTSHARED_EXPORT getLogType(int level);
+LOG4QTSHARED_EXPORT LogType getLogType(int level);
 // get printable description string for LogType
-QString LOG4QTSHARED_EXPORT getLogTypeString(LogType type);
+LOG4QTSHARED_EXPORT QString getLogTypeString(LogType type);
 
 // log message
 struct LogMessage

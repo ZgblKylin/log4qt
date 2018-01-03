@@ -7,7 +7,7 @@ LogDisplayFilter::LogDisplayFilter(LogDisplayModel* m, QObject *parent) :
     columnsEnabled.resize(model->columnCount());
     columnsEnabled[int(Column::DateTime)] = true;
     columnsEnabled[int(Column::Level)] = true;
-    columnsEnabled[int(Column::Thread)] = false;
+    columnsEnabled[int(Column::ThreadId)] = false;
     columnsEnabled[int(Column::FileLine)] = false;
     columnsEnabled[int(Column::Function)] = false;
     columnsEnabled[int(Column::Message)] = true;

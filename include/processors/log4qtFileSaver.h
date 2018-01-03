@@ -23,15 +23,13 @@ public:
 protected:
     // refresh log file pointer, e.g. reopen new file when file.size() > maxFileSize
     void refreshFile();
+    void closeFile();
 
     QFile* file;        // log file
     QTextCodec* codec;  // log file codec, UTF-8 for default
     QMutex mutex;       // mutex to guard file operation
     QString pattern = log4qt::impl::DefaultPattern; // log pattern
     int filter = log4qt::impl::DefaultFilter; // message with level under filter will not be processed
-
-private:
-    void closeFile();
 
     QThread thread;     // log file save will be run in separate thread
     QDir dir;           // log file dir, default is ./Log

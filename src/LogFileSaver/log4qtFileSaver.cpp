@@ -18,12 +18,17 @@ log4qtFileSaverBase::log4qtFileSaverBase(QObject* parent)
 
     maxFileSize = 100 * 1024 * 1024;
 
+    pattern = log4qt::impl::parsePattern(pattern);
+
     moveToThread(&thread);
+    thread.start(QThread::LowPriority);
 }
 
 log4qtFileSaverBase::~log4qtFileSaverBase()
 {
     closeFile();
+    thread.quit();
+    thread.wait();
 }
 
 void log4qtFileSaverBase::refreshFile()

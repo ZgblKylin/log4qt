@@ -5,6 +5,7 @@ log4qtDebugOutput::log4qtDebugOutput(QObject* parent)
     : log4qt::impl::ILogProcessor(parent)
 {
     log4qt::impl::LogEngine::registerProcessor(this, Qt::DirectConnection);
+    pattern = log4qt::impl::parsePattern(pattern);
 }
 
 log4qtDebugOutput::~log4qtDebugOutput()

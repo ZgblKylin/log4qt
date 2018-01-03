@@ -7,19 +7,34 @@
 namespace log4qt {
 namespace impl {
 /* ================ Log Pattern Functions ================ */
-QString processMessage(const QString& pattern, const QSharedPointer<LogMessage>& message)
+QString& parsePattern(QString& pattern)
 {
-    QString text = pattern;
-    text.replace(DateTime, message->dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss zzz")));
-    text.replace(Type, getLogTypeString(message->type));
-    text.replace(Level, QString::number(message->level));
-    text.replace(PID, QString::number(qApp->applicationPid()));
-    text.replace(ThreadId, QString::number(quintptr(message->threadid)));
-    text.replace(ThreadPtr, QStringLiteral("0x%1").arg(quintptr(message->threadptr), sizeof(quintptr)*2, 0, QLatin1Char('0')));
-    text.replace(File, message->file);
-    text.replace(Line, QString::number(message->line));
-    text.replace(Function, message->function);
-    text.replace(Message, *(message->message));
+    pattern.replace(PatternDateTime, PlaceHolderDateTime);
+    pattern.replace(PatternType, PlaceHolderType);
+    pattern.replace(PatternLevel, PlaceHolderLevel);
+    pattern.replace(PatternPID, PlaceHolderPID);
+    pattern.replace(PatternThreadId, PlaceHolderThreadId);
+    pattern.replace(PatternThreadPtr, PlaceHolderThreadPtr);
+    pattern.replace(PatternFile, PlaceHolderFile);
+    pattern.replace(PatternLine, PlaceHolderLine);
+    pattern.replace(PatternFunction, PlaceHolderFunction);
+    pattern.replace(PatternMessage, PlaceHolderMessage);
+    return pattern;
+}
+
+QString processMessage(const QString& parsedPattern, const QSharedPointer<LogMessage>& message)
+{
+    QString text = parsedPattern;
+    text.replace(PlaceHolderDateTime, message->dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss zzz")));
+    text.replace(PlaceHolderType, getLogTypeString(message->type));
+    text.replace(PlaceHolderLevel, QString::number(message->level));
+    text.replace(PlaceHolderPID, QString::number(qApp->applicationPid()));
+    text.replace(PlaceHolderThreadId, QString::number(quintptr(message->threadid)));
+    text.replace(PlaceHolderThreadPtr, QStringLiteral("0x%1").arg(quintptr(message->threadptr), sizeof(quintptr)*2, 0, QLatin1Char('0')));
+    text.replace(PlaceHolderFile, message->file);
+    text.replace(PlaceHolderLine, QString::number(message->line));
+    text.replace(PlaceHolderFunction, message->function);
+    text.replace(PlaceHolderMessage, *(message->message));
     return text;
 }
 

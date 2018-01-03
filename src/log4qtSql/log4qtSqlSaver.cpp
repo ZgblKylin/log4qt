@@ -8,10 +8,11 @@ log4qtSqlSaver::log4qtSqlSaver(QSqlDatabase database, QObject* parent)
 {
     query.prepare(QStringLiteral("INSERT INTO Log (time, level, threadid, threadptr, file, line, function, message) "
                                  "VALUES (:%1, :%2, :%3, :%4, :%5, :%6, :%7, :%8)")
-                  .arg(log4qt::impl::DateTime).arg(log4qt::impl::Level)
-                  .arg(log4qt::impl::ThreadId).arg(log4qt::impl::ThreadPtr)
-                  .arg(log4qt::impl::File).arg(log4qt::impl::Line)
-                  .arg(log4qt::impl::Function).arg(log4qt::impl::Message));
+                  .arg(log4qt::impl::PatternDateTime).arg(log4qt::impl::PatternLevel)
+                  .arg(log4qt::impl::PatternPID).arg(log4qt::impl::PatternThreadId)
+                  .arg(log4qt::impl::PatternThreadPtr).arg(log4qt::impl::PatternFile)
+                  .arg(log4qt::impl::PatternLine).arg(log4qt::impl::PatternFunction)
+                  .arg(log4qt::impl::PatternMessage));
 
     connect(&timer, &QTimer::timeout, [=]{
         db.commit();
@@ -28,12 +29,13 @@ void log4qtSqlSaver::log(const QSharedPointer<log4qt::impl::LogMessage> message)
     QSqlQuery q(query);
     q.bindValue(0, message->dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss zzz")));
     q.bindValue(1, message->level);
-    q.bindValue(2, QStringLiteral("%1").arg(quintptr(message->threadid), sizeof(quintptr) * 2, 16, QLatin1Char('0')));
-    q.bindValue(3, QStringLiteral("%1").arg(quintptr(message->threadptr), sizeof(quintptr) * 2, 16, QLatin1Char('0')));
-    q.bindValue(4, message->file);
-    q.bindValue(5, message->line);
-    q.bindValue(6, message->function);
-    q.bindValue(7, *(message->message));
+    q.bindValue(2, QString::number(message->pid));
+    q.bindValue(3, QStringLiteral("%1").arg(quintptr(message->threadid), sizeof(quintptr) * 2, 16, QLatin1Char('0')));
+    q.bindValue(4, QStringLiteral("%1").arg(quintptr(message->threadptr), sizeof(quintptr) * 2, 16, QLatin1Char('0')));
+    q.bindValue(5, message->file);
+    q.bindValue(6, message->line);
+    q.bindValue(7, message->function);
+    q.bindValue(8, *(message->message));
     if(!q.exec())
     {
         qDebug() << q.lastQuery()

@@ -58,7 +58,8 @@ QVariant LogDisplayModel::data(const QModelIndex& index, int role) const
         case Column::DateTime:
         case Column::Level:
         case Column::Process:
-        case Column::Thread:
+        case Column::ThreadId:
+        case Column::ThreadPtr:
             return Qt::AlignCenter;
         default:
             return int(Qt::AlignLeft | Qt::AlignVCenter);
@@ -74,9 +75,13 @@ QVariant LogDisplayModel::data(const QModelIndex& index, int role) const
                     .arg(log4qt::impl::getLogTypeString(message->type)).arg(message->level);
         case Column::Process:
             return message->pid;
-        case Column::Thread:
+        case Column::ThreadId:
             return QStringLiteral("@%1")
                     .arg(quintptr(message->threadid), sizeof(quintptr) * 2, 16, QLatin1Char('0'))
+                    .toUpper();
+        case Column::ThreadPtr:
+            return QStringLiteral("@%1")
+                    .arg(quintptr(message->threadptr), sizeof(quintptr) * 2, 16, QLatin1Char('0'))
                     .toUpper();
         case Column::FileLine:
             return QStringLiteral("%1:%2")
@@ -99,8 +104,10 @@ QVariant LogDisplayModel::data(const QModelIndex& index, int role) const
             return message->level;
         case Column::Process:
             return message->pid;
-        case Column::Thread:
+        case Column::ThreadId:
             return quintptr(message->threadid);
+        case Column::ThreadPtr:
+            return quintptr(message->threadptr);
         case Column::FileLine:
             return QVariant::fromValue(qMakePair(message->file, message->line));
         case Column::Function:
@@ -166,8 +173,10 @@ QVariant LogDisplayModel::headerData(int section, Qt::Orientation orientation, i
             return tr("Level");
         case Column::Process:
             return tr("Process");
-        case Column::Thread:
-            return tr("Thread");
+        case Column::ThreadId:
+            return tr("ThreadId");
+        case Column::ThreadPtr:
+            return tr("ThreadPtr");
         case Column::FileLine:
             return tr("FileLine");
         case Column::Function:
