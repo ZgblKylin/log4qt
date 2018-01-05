@@ -1,167 +1,133 @@
 #include <QCoreApplication>
 #include <processors/log4qtFileSaver.h>
+#include "log4qtFileSaveTask.h"
 
 /* ================ LogFileSaverBase ================ */
+void setAllPageProperty(const char* name, const QVariant& value, QMap<QString, log4qtFileSaveTask*>& tasks)
+{
+    for(auto it = tasks.begin(); it != tasks.end(); ++ it)
+        it.value()->setProperty(name, value);
+}
+
 log4qtFileSaverBase::log4qtFileSaverBase(QObject* parent)
     : log4qt::impl::ILogProcessor(parent),
       mutex(QMutex::Recursive)
 {
-    dir = QDir(qApp->applicationDirPath()
-               + QDir::separator()
-               + QStringLiteral("Log"));
+}
+
+void log4qtFileSaverBase::start()
+{
+    log4qt::impl::getLogEngine()->registerProcessor(this, Qt::DirectConnection);
+}
+
+void log4qtFileSaverBase::log(const QSharedPointer<log4qt::impl::LogMessage> message)
+{
+    QMutexLocker locker(&mutex);
+    if(Q_UNLIKELY(!dirInited))
+    {
+        setDir(qApp->applicationDirPath()
+                      + QDir::separator()
+                      + QStringLiteral("Log"));
+        dirInited = true;
+    }
+    getTask(message->category);
+    emit record(message);
+}
+
+QObject* log4qtFileSaverBase::getTask(const QString& category) const
+{
+    QMutexLocker locker(&mutex);
+    log4qtFileSaveTask* task = tasks.value(category);
+    if(!task)
+    {
+        task = createTask(category);
+        task->setProperty("dir", dir.absoluteFilePath(category));
+        task->setProperty("maxFileSize", maxFileSize);
+        task->setProperty("pattern", log4qt::impl::parsePattern(pattern));
+        task->setProperty("filter", filter);
+        const_cast<QMap<QString, log4qtFileSaveTask*>&>(tasks).insert(category, task);
+    }
+    return task;
+}
+
+QString log4qtFileSaverBase::getDir() const
+{
+    return dir.absolutePath();
+}
+
+void log4qtFileSaverBase::setDir(const QString& path)
+{
+    QMutexLocker locker(&mutex);
+    dirInited = true;
+    dir.setPath(path);
     if(!dir.exists())
         dir.mkpath(dir.absolutePath());
-
-    codec = QTextCodec::codecForName("UTF-8");
-
-    file = new QFile(this);
-
-    maxFileSize = 100 * 1024 * 1024;
-
-    pattern = log4qt::impl::parsePattern(pattern);
-
-    moveToThread(&thread);
-    thread.start(QThread::LowPriority);
+    for(auto it = tasks.cbegin(); it != tasks.cend(); ++it)
+        it.value()->setProperty("dir", dir.absoluteFilePath(it.key()));
 }
 
-log4qtFileSaverBase::~log4qtFileSaverBase()
+qint64 log4qtFileSaverBase::getMaxFileSize() const
 {
-    closeFile();
-    thread.quit();
-    thread.wait();
+    return maxFileSize;
 }
 
-void log4qtFileSaverBase::refreshFile()
+void log4qtFileSaverBase::setMaxFileSize(qint64 value)
 {
-    QMutexLocker locker(&mutex);
-
-    if(Q_LIKELY(file->isOpen() && (file->size() <= maxFileSize)))
-        return;
-
-    closeFile();
-
-    // file name is datetime
-    QString newName = QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_HHmmss"));
-    if(Q_UNLIKELY(fileName == newName))
-        ++fileIndex;
-    else
-        fileIndex = 1;
-    fileName = newName;
-
-    // add suffix if file duplicated
-    if(Q_LIKELY(fileIndex == 1))
-        file->setFileName(dir.absoluteFilePath(QStringLiteral("%1.log")).arg(fileName));
-    else
-        file->setFileName(dir.absoluteFilePath(QStringLiteral("%1_%2.log")).arg(fileName).arg(fileIndex));
-
-    file->open(QFile::ReadWrite | QFile::Text | QFile::Truncate);
+    maxFileSize = value;
+    setAllPageProperty("maxFileSize", maxFileSize, tasks);
 }
 
-void log4qtFileSaverBase::closeFile()
+QString log4qtFileSaverBase::getPattern() const
 {
-    QMutexLocker locker(&mutex);
-
-    if(file->isOpen())
-    {
-        file->close();
-        if(file->size() == 0)
-            file->remove();
-    }
+    return pattern;
 }
+
+void log4qtFileSaverBase::setPattern(const QString& value)
+{
+    pattern = value;
+    setAllPageProperty("pattern", log4qt::impl::parsePattern(pattern), tasks);
+}
+
+int log4qtFileSaverBase::getFilter() const
+{
+    return filter;
+}
+
+void log4qtFileSaverBase::setFilter(int value)
+{
+    filter = value;
+    setAllPageProperty("filter", filter, tasks);
+}
+
 
 /* ================ LogFileNormalSaver ================ */
 log4qtFileNormalSaver::log4qtFileNormalSaver(QObject *parent) :
     log4qtFileSaverBase(parent)
 {
-    log4qt::impl::LogEngine::registerProcessor(this, Qt::QueuedConnection);
 }
 
-void log4qtFileNormalSaver::log(const QSharedPointer<log4qt::impl::LogMessage> message)
+log4qtFileSaveTask* log4qtFileNormalSaver::createTask(const QString& category) const
 {
-    if(message->level < filter)
-        return;
-    QMutexLocker locker(&mutex);
-
-    QString text = log4qt::impl::processMessage(pattern, message);
-    QByteArray bytes;
-    QTextStream ts(&bytes, QIODevice::ReadWrite | QIODevice::Text);
-    ts.setCodec(codec);
-    ts << text;
-    ts.flush();
-    file->write(bytes);
-
-    ++count;
-    if(flushCount >= 0)
-    {
-        if(count >= flushCount)
-        {
-            file->flush();
-            count = 0;
-        }
-    }
+    auto task = new log4qtFileNormalSaveTask(property("dir").toString(), category, const_cast<log4qtFileNormalSaver*>(this));
+    task->setProperty("flushCount", flushCount);
+    connect(this, &log4qtFileNormalSaver::record,
+            task, &log4qtFileSaveTask::record,
+            Qt::QueuedConnection);
+    return task;
 }
 
 /* ================ LogFileMmapSaver ================ */
 log4qtFileMmapSaver::log4qtFileMmapSaver(QObject *parent) :
     log4qtFileSaverBase(parent)
 {
-    log4qt::impl::LogEngine::registerProcessor(this, Qt::DirectConnection);
 }
 
-void log4qtFileMmapSaver::log(const QSharedPointer<log4qt::impl::LogMessage> message)
+log4qtFileSaveTask* log4qtFileMmapSaver::createTask(const QString& category) const
 {
-    if(message->level < filter)
-        return;
-    QMutexLocker locker(&mutex);
-
-    QString text = log4qt::impl::processMessage(pattern, message);
-    QByteArray bytes;
-    QTextStream ts(&bytes, QIODevice::ReadWrite | QIODevice::Text);
-    ts.setCodec(codec);
-    ts << text;
-    ts.flush();
-
-    refreshFile();
-
-    // p is writing point
-    for(const char* p=bytes.cbegin();p!=bytes.cend();)
-    {
-        // refresh mmap block
-        if(availableSize == 0)
-            map();
-
-        // remain size to be written
-        const qint64 remain = bytes.cend() - p;
-        // available size to write
-        const qint64 writeSize = std::min(remain, availableSize);
-
-        if(Q_LIKELY(block))
-        {
-            memcpy(block, p, writeSize);
-            block += writeSize;
-            availableSize -= writeSize;
-        }
-        p += writeSize;
-    }
-}
-
-void log4qtFileMmapSaver::map()
-{
-    QMutexLocker locker(&mutex);
-
-    // expand file size to next block
-    file->resize(file->size() + mapSize);
-
-    // unmap last block
-    if(Q_LIKELY(block))
-        file->unmap(block - mapSize);
-
-    // mmap new block
-    block = file->map(mapPos, mapSize);
-    if(Q_LIKELY(block))
-    {
-        mapPos += mapSize;
-        availableSize = mapSize;
-        memset(block, '\0', availableSize);
-    }
+    auto task = new log4qtFileMmapSaveTask(property("dir").toString(), category, const_cast<log4qtFileMmapSaver*>(this));
+    task->setProperty("mapSize", mapSize);
+    connect(this, &log4qtFileMmapSaver::record,
+            task, &log4qtFileSaveTask::record,
+            Qt::DirectConnection);
+    return task;
 }

@@ -3,12 +3,11 @@
 
 #include <QtCore/QQueue>
 #include <QtGui/QColor>
-#include <QtWidgets/QTableView>
+#include <QtWidgets/QGroupBox>
 #include <log4qt.h>
 
-class LogDisplayModel;
-class LogDisplayFilter;
-class QMenu;
+class QStackedLayout;
+
 
 // buffer for caching log messages before log4qtDisplayWidget constructed
 class LOG4QTSHARED_EXPORT LogDisplayBuffer : public log4qt::impl::ILogProcessor
@@ -19,82 +18,96 @@ public:
     virtual ~LogDisplayBuffer() = default;
 
     // take all stored log messages, stop caching log
-    QQueue<QSharedPointer<log4qt::impl::LogMessage>> takeAll();
+    QList<QSharedPointer<log4qt::impl::LogMessage>> takeAll();
 
-private:
     // ILogProcessor interface
+    virtual void start() override;
     Q_SLOT virtual void log(const QSharedPointer<log4qt::impl::LogMessage> message) override;
 
-    QQueue<QSharedPointer<log4qt::impl::LogMessage>> messages;
+private:
+    QList<QSharedPointer<log4qt::impl::LogMessage>> messages;
 };
 
+
 // widget for displaying log message
-class LOG4QTSHARED_EXPORT log4qtDisplayWidget : public log4qt::impl::ILogProcessorWidget<QTableView>
+class LOG4QTSHARED_EXPORT log4qtDisplayWidget : public log4qt::impl::ILogProcessorWidget<QGroupBox>
 {
     Q_OBJECT
+
+    /* ======== All properties will be set to all pages, replacing their own value ======== */
     // message with level under filter will not be processed, default is Infomation
-    Q_PROPERTY(int filter READ filter WRITE setFilter)
+    Q_PROPERTY(int getFilter READ getFilter WRITE setFilter)
     // max count to be shown(before filter), default is 10000
-    Q_PROPERTY(int maxCount READ maxCount WRITE setMaxCount)
+    Q_PROPERTY(int getMaxCount READ getMaxCount WRITE setMaxCount)
     // foreground color for log text
-    Q_PROPERTY(QColor debugForeground READ debugForeground WRITE setDebugForeground)
-    Q_PROPERTY(QColor infomationForeground READ infomationForeground WRITE setInfomationForeground)
-    Q_PROPERTY(QColor warningForeground READ warningForeground WRITE setWarningForeground)
-    Q_PROPERTY(QColor criticalForeground READ criticalForeground WRITE setCriticalForeground)
-    Q_PROPERTY(QColor fatalForeground READ fatalForeground WRITE setFatalForeground)
+    Q_PROPERTY(QColor debugForeground READ getDebugForeground WRITE setDebugForeground)
+    Q_PROPERTY(QColor infomationForeground READ getInfomationForeground WRITE setInfomationForeground)
+    Q_PROPERTY(QColor warningForeground READ getWarningForeground WRITE setWarningForeground)
+    Q_PROPERTY(QColor criticalForeground READ getCriticalForeground WRITE setCriticalForeground)
+    Q_PROPERTY(QColor fatalForeground READ getFatalForeground WRITE setFatalForeground)
     // background color for log text
-    Q_PROPERTY(QColor debugBackground READ debugBackground WRITE setDebugBackground)
-    Q_PROPERTY(QColor infomationBackground READ infomationBackground WRITE setInfomationBackground)
-    Q_PROPERTY(QColor warningBackground READ warningBackground WRITE setWarningBackground)
-    Q_PROPERTY(QColor criticalBackground READ criticalBackground WRITE setCriticalBackground)
-    Q_PROPERTY(QColor fatalBackground READ fatalBackground WRITE setFatalBackground)
+    Q_PROPERTY(QColor debugBackground READ getDebugBackground WRITE setDebugBackground)
+    Q_PROPERTY(QColor infomationBackground READ getInfomationBackground WRITE setInfomationBackground)
+    Q_PROPERTY(QColor warningBackground READ getWarningBackground WRITE setWarningBackground)
+    Q_PROPERTY(QColor criticalBackground READ getCriticalBackground WRITE setCriticalBackground)
+    Q_PROPERTY(QColor fatalBackground READ getFatalBackground WRITE setFatalBackground)
 
 public:
     explicit log4qtDisplayWidget(QWidget* parent = 0);
     log4qtDisplayWidget(LogDisplayBuffer* buffer, QWidget* parent = 0);
     virtual ~log4qtDisplayWidget() = default;
 
-private:
+    // get page of given category, has same properties as log4qtDisplayWidget
+    QWidget* getPage(const QString& category) const;
+
     // ILogProcessor interface
+    virtual void start() override;
     Q_SLOT virtual void log(const QSharedPointer<log4qt::impl::LogMessage> message) override;
 
-    // message with level under filter will not be processed
-    Q_SLOT void on_setDisplayFilter_triggered();
-
-    // select which columns will be shown
-    Q_SLOT void on_selectColumn_triggered();
-
-    int filter() const;
+private:
+    int getFilter() const;
     void setFilter(int value);
 
-    int maxCount() const;
+    int getMaxCount() const;
     void setMaxCount(int value);
 
-    QColor debugForeground() const;
+    QColor getDebugForeground() const;
     void setDebugForeground(QColor color);
-    QColor infomationForeground() const;
+    QColor getInfomationForeground() const;
     void setInfomationForeground(QColor color);
-    QColor warningForeground() const;
+    QColor getWarningForeground() const;
     void setWarningForeground(QColor color);
-    QColor criticalForeground() const;
+    QColor getCriticalForeground() const;
     void setCriticalForeground(QColor color);
-    QColor fatalForeground() const;
+    QColor getFatalForeground() const;
     void setFatalForeground(QColor color);
 
-    QColor debugBackground() const;
+    QColor getDebugBackground() const;
     void setDebugBackground(QColor color);
-    QColor infomationBackground() const;
+    QColor getInfomationBackground() const;
     void setInfomationBackground(QColor color);
-    QColor warningBackground() const;
+    QColor getWarningBackground() const;
     void setWarningBackground(QColor color);
-    QColor criticalBackground() const;
+    QColor getCriticalBackground() const;
     void setCriticalBackground(QColor color);
-    QColor fatalBackground() const;
+    QColor getFatalBackground() const;
     void setFatalBackground(QColor color);
 
-    LogDisplayModel* model;
-    LogDisplayFilter* filterModel;
-    QMenu* menu;
+    // properties
+    int filter = log4qt::Infomation;
+    int maxCount = 10000;
+    QColor debugForeground = Qt::white;
+    QColor infomationForeground = Qt::white;
+    QColor warningForeground = Qt::white;
+    QColor criticalForeground = Qt::white;
+    QColor fatalForeground = Qt::white;
+    QColor debugBackground = QColor::fromRgb(0x6C7EC2);
+    QColor infomationBackground = QColor::fromRgb(0x50BC6C);
+    QColor warningBackground = QColor::fromRgb(0xDE9E24);
+    QColor criticalBackground = QColor::fromRgb(0xD73333);
+    QColor fatalBackground = QColor::fromRgb(0x591111);
+
+    QStackedLayout* stackedLayout;
 };
 
 #endif // LOG4QTDISPLAYWIDGET_H

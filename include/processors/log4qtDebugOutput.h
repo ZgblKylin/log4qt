@@ -14,12 +14,15 @@ public:
     explicit log4qtDebugOutput(QObject* parent = 0);
     virtual ~log4qtDebugOutput();
 
-private:
     // ILogProcessor interface
+    virtual void start() override;
     Q_SLOT virtual void log(const QSharedPointer<log4qt::impl::LogMessage> message) override;
 
+private:
     // log pattern
-    QString pattern = log4qt::impl::DefaultPattern;
+    QString pattern = QStringLiteral("[%1] %2")
+                      .arg(log4qt::impl::PatternCategory)
+                      .arg(log4qt::impl::DefaultPattern);
 
     // message with level under filter will not be processed
     int filter = log4qt::impl::DefaultFilter;

@@ -2,43 +2,9 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QGlobalStatic>
 #include <log4qt.h>
-#include "log4qtLogEngine.h"
 
 namespace log4qt {
 namespace impl {
-/* ================ Log Pattern Functions ================ */
-QString& parsePattern(QString& pattern)
-{
-    pattern.replace(PatternDateTime, PlaceHolderDateTime);
-    pattern.replace(PatternType, PlaceHolderType);
-    pattern.replace(PatternLevel, PlaceHolderLevel);
-    pattern.replace(PatternPID, PlaceHolderPID);
-    pattern.replace(PatternThreadId, PlaceHolderThreadId);
-    pattern.replace(PatternThreadPtr, PlaceHolderThreadPtr);
-    pattern.replace(PatternFile, PlaceHolderFile);
-    pattern.replace(PatternLine, PlaceHolderLine);
-    pattern.replace(PatternFunction, PlaceHolderFunction);
-    pattern.replace(PatternMessage, PlaceHolderMessage);
-    return pattern;
-}
-
-QString processMessage(const QString& parsedPattern, const QSharedPointer<LogMessage>& message)
-{
-    QString text = parsedPattern;
-    text.replace(PlaceHolderDateTime, message->dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss zzz")));
-    text.replace(PlaceHolderType, getLogTypeString(message->type));
-    text.replace(PlaceHolderLevel, QString::number(message->level));
-    text.replace(PlaceHolderPID, QString::number(qApp->applicationPid()));
-    text.replace(PlaceHolderThreadId, QString::number(quintptr(message->threadid)));
-    text.replace(PlaceHolderThreadPtr, QStringLiteral("0x%1").arg(quintptr(message->threadptr), sizeof(quintptr)*2, 0, QLatin1Char('0')));
-    text.replace(PlaceHolderFile, message->file);
-    text.replace(PlaceHolderLine, QString::number(message->line));
-    text.replace(PlaceHolderFunction, message->function);
-    text.replace(PlaceHolderMessage, *(message->message));
-    return text;
-}
-
-
 /* ================ LogType Functions ================ */
 LogType getLogType(int level)
 {
@@ -74,8 +40,9 @@ QString getLogTypeString(LogType type)
 
 
 /* ================ LogMessage Implementation ================ */
-LogMessage::LogMessage(int lvl, QString fl, int ln, QString fn)
-    : dateTime(QDateTime::currentDateTime()),
+LogMessage::LogMessage(const QString& cg, int lvl, QString fl, int ln, const QString& fn)
+    : category(cg),
+      dateTime(QDateTime::currentDateTime()),
       type(getLogType(lvl)),
       level(lvl),
       pid(qApp->applicationPid()),
@@ -85,25 +52,6 @@ LogMessage::LogMessage(int lvl, QString fl, int ln, QString fn)
       line(ln),
       function(fn),
       message(QSharedPointer<QString>::create()) {}
-
-
-/* ================ LogEngine Implementation ================ */
-Q_GLOBAL_STATIC(LogEngineImpl, engine)
-
-LogStream LogEngine::log(int logLevel, const QString& file, int line, const QString& function)
-{
-    return engine->log(logLevel, file, line, function);
-}
-
-bool LogEngine::registerProcessor(ILogProcessorBase* processor, Qt::ConnectionType connectionType)
-{
-    return engine->registerProcessor(processor, connectionType);
-}
-
-void LogEngine::unRegisterProcessor(ILogProcessorBase* processor)
-{
-    return engine->unRegisterProcessor(processor);
-}
 
 
 /* ================ LogStream Implementation ================ */
@@ -134,6 +82,42 @@ void LogStream::log(const char* format, ...)
     std::vsnprintf(buf.data(), buf.size(), format, args);
     va_end(args);
     (*this) << buf.data();
+}
+
+
+/* ================ Log Pattern Functions ================ */
+QString parsePattern(const QString& pattern)
+{
+    QString ret = pattern;
+    ret.replace(PatternCategory, PlaceHolderCategory);
+    ret.replace(PatternDateTime, PlaceHolderDateTime);
+    ret.replace(PatternType, PlaceHolderType);
+    ret.replace(PatternLevel, PlaceHolderLevel);
+    ret.replace(PatternPID, PlaceHolderPID);
+    ret.replace(PatternThreadId, PlaceHolderThreadId);
+    ret.replace(PatternThreadPtr, PlaceHolderThreadPtr);
+    ret.replace(PatternFile, PlaceHolderFile);
+    ret.replace(PatternLine, PlaceHolderLine);
+    ret.replace(PatternFunction, PlaceHolderFunction);
+    ret.replace(PatternMessage, PlaceHolderMessage);
+    return ret;
+}
+
+QString processMessage(const QString& parsedPattern, const QSharedPointer<LogMessage>& message)
+{
+    QString text = parsedPattern;
+    text.replace(PlaceHolderCategory, message->category);
+    text.replace(PlaceHolderDateTime, message->dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss zzz")));
+    text.replace(PlaceHolderType, getLogTypeString(message->type));
+    text.replace(PlaceHolderLevel, QString::number(message->level));
+    text.replace(PlaceHolderPID, QString::number(qApp->applicationPid()));
+    text.replace(PlaceHolderThreadId, QString::number(quintptr(message->threadid)));
+    text.replace(PlaceHolderThreadPtr, QStringLiteral("0x%1").arg(quintptr(message->threadptr), sizeof(quintptr)*2, 16, QLatin1Char('0')));
+    text.replace(PlaceHolderFile, message->file);
+    text.replace(PlaceHolderLine, QString::number(message->line));
+    text.replace(PlaceHolderFunction, message->function);
+    text.replace(PlaceHolderMessage, *(message->message));
+    return text;
 }
 
 } // namespace impl

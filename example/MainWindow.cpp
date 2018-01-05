@@ -7,18 +7,17 @@ MainWindow::MainWindow(QWidget* parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->verticalLayout->addWidget(new log4qtDisplayWidget(new LogDisplayBuffer(this), this));
+
+    LogDisplayBuffer* buffer = new LogDisplayBuffer(this);
+    log4qtDisplayWidget* widget = new log4qtDisplayWidget(buffer, this);
+    ui->verticalLayout->addWidget(widget);
+    buffer->start();
+    widget->start();
 
     connect(ui->ok, &QPushButton::clicked,
             this, [=]{
-        qtLog(ui->level->value()) << ui->message->text();
+        qtCLog(ui->category->text(), ui->level->value()) << ui->message->text();
     });
-
-    qtDebug("Hello World!");
-    qtInfomation("Hello World!");
-    qtWarning("Hello World!");
-    qtCritical("Hello World!");
-    qtFatal("Hello World!");
 }
 
 MainWindow::~MainWindow()

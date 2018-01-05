@@ -4,12 +4,16 @@
 log4qtDebugOutput::log4qtDebugOutput(QObject* parent)
     : log4qt::impl::ILogProcessor(parent)
 {
-    log4qt::impl::LogEngine::registerProcessor(this, Qt::DirectConnection);
     pattern = log4qt::impl::parsePattern(pattern);
 }
 
 log4qtDebugOutput::~log4qtDebugOutput()
 {
+}
+
+void log4qtDebugOutput::start()
+{
+    log4qt::impl::getLogEngine()->registerProcessor(this, Qt::DirectConnection);
 }
 
 void log4qtDebugOutput::log(const QSharedPointer<log4qt::impl::LogMessage> message)

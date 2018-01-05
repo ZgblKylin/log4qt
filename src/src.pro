@@ -33,7 +33,9 @@ HEADERS += \
     ../include/processors/log4qtFileSaver.h \
     LogDisplay/log4qtDisplayFilter.h \
     LogDisplay/log4qtDisplayModel.h \
-    ../include/processors/log4qtSqlSaver.h
+    ../include/processors/log4qtSqlSaver.h \
+    LogDisplay/log4qtDisplayPage.h \
+    LogFileSaver/log4qtFileSaveTask.h
 
 SOURCES += \
     log4qtDefs.cpp \
@@ -43,7 +45,9 @@ SOURCES += \
     LogDisplay/log4qtDisplayModel.cpp \
     LogDisplay/log4qtDisplayWidget.cpp \
     LogFileSaver/log4qtFileSaver.cpp \
-    log4qtSql/log4qtSqlSaver.cpp
+    log4qtSql/log4qtSqlSaver.cpp \
+    LogDisplay/log4qtDisplayPage.cpp \
+    LogFileSaver/log4qtFileSaveTask.cpp
 
 DISTFILES += \
     log4qt.ts

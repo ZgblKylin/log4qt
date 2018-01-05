@@ -5,7 +5,7 @@
 #include <QtCore/QQueue>
 #include <QtCore/QMutex>
 
-class LogEngineImpl : public QObject
+class LogEngineImpl : public QObject, public log4qt::impl::LogEngine
 {
     Q_OBJECT
     Q_DISABLE_COPY(LogEngineImpl)
@@ -13,16 +13,20 @@ public:
     LogEngineImpl();
     ~LogEngineImpl() = default;
 
-    log4qt::impl::LogStream log(int logLevel, const QString& file, int line, const QString& function);
+    virtual log4qt::impl::LogStream log(const QString& category, int logLevel, const QString& file, int line, const QString& function) override final;
 
-    bool registerProcessor(log4qt::impl::ILogProcessorBase* processor, Qt::ConnectionType connectionType);
-    void unRegisterProcessor(log4qt::impl::ILogProcessorBase* processor);
+    virtual bool registerProcessor(log4qt::impl::ILogProcessorBase* processor, Qt::ConnectionType connectionType) override final;
+    virtual void unRegisterProcessor(log4qt::impl::ILogProcessorBase* processor) override final;
+
+    virtual int categoryFilter(const QString& name) override final;
+    virtual void setCategoryFilter(const QString& name, int filter) override final;
 
 private:
     Q_SIGNAL void newLog(QSharedPointer<log4qt::impl::LogMessage> message) const;
 
-    QMutex mutex;
+    mutable QMutex mutex;
     QQueue<log4qt::impl::ILogProcessorBase*> processors;
+    QMap<QString, int> categories;
 };
 
 #endif // LOG4QTLOGENGINE_H

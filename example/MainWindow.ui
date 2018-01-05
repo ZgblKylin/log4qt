@@ -7,16 +7,26 @@
     <x>0</x>
     <y>0</y>
     <width>986</width>
-    <height>849</height>
+    <height>36</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="1">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,5,0,0,1,10,0">
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>category</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="category"/>
+      </item>
       <item>
        <widget class="QLabel" name="label">
         <property name="text">

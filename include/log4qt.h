@@ -21,17 +21,27 @@ enum LogLevel
  * C++ style:
  *     qtDebug() << "Hello World";
  */
-// logging for custom log level
-#define qtLog(logLevel, ...) log4qt::impl::LogEngine::log(logLevel, __FILE__, __LINE__, Q_FUNC_INFO).log(__VA_ARGS__)
-// logging for debug message
+#define qtLog(logLevel, ...) \
+    log4qt::impl::getLogEngine()->log(QString(), logLevel, __FILE__, __LINE__, Q_FUNC_INFO).log(__VA_ARGS__)
 #define qtDebug(...) qtLog(log4qt::Debug, __VA_ARGS__)
-// logging for infomation message
 #define qtInfomation(...) qtLog(log4qt::Infomation, __VA_ARGS__)
-// logging for warning message
 #define qtWarning(...) qtLog(log4qt::Warning, __VA_ARGS__)
-// logging for critical message
 #define qtCritical(...) qtLog(log4qt::Critical, __VA_ARGS__)
-// logging for fatal message
 #define qtFatal(...) qtLog(log4qt::Fatal, __VA_ARGS__)
+
+
+/* The logging category represents a category, or 'area' in the logging infrastructure.
+ * It is identified by a string - at runtime.
+ * A category can be configured to filter messages by level.
+ * When a message is not accepted by filter, it will not be recorded, generate none performance costs
+ */
+#define qtCLog(category, logLevel, ...) \
+    if(log4qt::impl::getLogEngine()->categoryFilter(category) >= logLevel) \
+        log4qt::impl::getLogEngine()->log(category, logLevel, __FILE__, __LINE__, Q_FUNC_INFO).log(__VA_ARGS__)
+#define qtCDebug(category, ...) qtCLog(category, log4qt::Debug, __VA_ARGS__)
+#define qtCInfomation(category, ...) qtCLog(category, log4qt::Infomation, __VA_ARGS__)
+#define qtCWarning(category, ...) qtCLog(category, log4qt::Warning, __VA_ARGS__)
+#define qtCCritical(category, ...) qtCLog(category, log4qt::Critical, __VA_ARGS__)
+#define qtCFatal(category, ...) qtCLog(category, log4qt::Fatal, __VA_ARGS__)
 
 #endif // LOG4QT_H
