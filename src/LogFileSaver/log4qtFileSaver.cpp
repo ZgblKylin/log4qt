@@ -41,7 +41,12 @@ void log4qtFileSaverBase::log(const QSharedPointer<log4qt::impl::LogMessage> mes
         task->setProperty("filter", filter);
         tasks.insert(message->category, task);
     }
-    return task;
+    emit record(message);
+}
+
+QObject* log4qtFileSaverBase::getTask(const QString& category) const
+{
+    return tasks.value(category, nullptr);
 }
 
 QString log4qtFileSaverBase::getDir() const
