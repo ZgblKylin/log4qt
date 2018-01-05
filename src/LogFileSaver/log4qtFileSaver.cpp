@@ -3,7 +3,7 @@
 #include "log4qtFileSaveTask.h"
 
 /* ================ LogFileSaverBase ================ */
-void setAllPageProperty(const char* name, const QVariant& value, QMap<QString, log4qtFileSaveTask*>& tasks)
+void setAllPageProperty(const char* name, const QVariant& value, QHash<QString, log4qtFileSaveTask*>& tasks)
 {
     for(auto it = tasks.begin(); it != tasks.end(); ++ it)
         it.value()->setProperty(name, value);
@@ -30,22 +30,16 @@ void log4qtFileSaverBase::log(const QSharedPointer<log4qt::impl::LogMessage> mes
                       + QStringLiteral("Log"));
         dirInited = true;
     }
-    getTask(message->category);
-    emit record(message);
-}
-
-QObject* log4qtFileSaverBase::getTask(const QString& category) const
-{
-    QMutexLocker locker(&mutex);
-    log4qtFileSaveTask* task = tasks.value(category);
+    log4qtFileSaveTask* task = qobject_cast<log4qtFileSaveTask*>(getTask(message->category));
     if(!task)
     {
-        task = createTask(category);
-        task->setProperty("dir", dir.absoluteFilePath(category));
+        task = createTask(message->category);
+        task->setObjectName(objectName() + '_' + message->category);
+        task->setProperty("dir", dir.absoluteFilePath(message->category));
         task->setProperty("maxFileSize", maxFileSize);
         task->setProperty("pattern", log4qt::impl::parsePattern(pattern));
         task->setProperty("filter", filter);
-        const_cast<QMap<QString, log4qtFileSaveTask*>&>(tasks).insert(category, task);
+        tasks.insert(message->category, task);
     }
     return task;
 }

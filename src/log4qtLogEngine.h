@@ -4,6 +4,7 @@
 #include <log4qt.h>
 #include <QtCore/QQueue>
 #include <QtCore/QMutex>
+#include <QtCore/QHash>
 
 class LogEngineImpl : public QObject, public log4qt::impl::LogEngine
 {
@@ -26,7 +27,7 @@ private:
 
     mutable QMutex mutex;
     QQueue<log4qt::impl::ILogProcessorBase*> processors;
-    QMap<QString, int> categories;
+    QHash<QString, int> categories;
 };
 
 #endif // LOG4QTLOGENGINE_H

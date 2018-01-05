@@ -50,7 +50,7 @@ private:
     int getFilter() const;
     void setFilter(int value);
 
-    QMap<QString, log4qtFileSaveTask*> tasks; // file save task for each category
+    QHash<QString, log4qtFileSaveTask*> tasks; // file save task for each category
     mutable QMutex mutex;
 
     // properties
