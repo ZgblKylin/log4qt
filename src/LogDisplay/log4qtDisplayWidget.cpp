@@ -74,10 +74,10 @@ log4qtDisplayWidget::log4qtDisplayWidget(LogDisplayBuffer* buffer, QWidget* pare
     layout->addLayout(titleLayout);
 
     // left spacer in title layout
-    titleLayout->addItem(new QSpacerItem(467, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    titleLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     // title
-    QLabel* title = new QLabel(tr("log"), this);
+    QLabel* title = new QLabel(tr("Log"), this);
     titleLayout->addWidget(title);
 
     // left button in title layout
@@ -108,7 +108,7 @@ log4qtDisplayWidget::log4qtDisplayWidget(LogDisplayBuffer* buffer, QWidget* pare
     titleLayout->addWidget(right);
 
     // right spacer in title layout
-    titleLayout->addItem(new QSpacerItem(467, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    titleLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     // stacked layout to contain category pages
     stackedLayout = new QStackedLayout(this);
