@@ -1,12 +1,9 @@
-#ifndef LOGDISPLAYMODEL_H
-#define LOGDISPLAYMODEL_H
+#ifndef LOG4QTDISPLAYMODEL_H
+#define LOG4QTDISPLAYMODEL_H
 
-#include <QtCore/QDateTime>
 #include <QtCore/QAbstractTableModel>
-#include <QtCore/QSize>
+#include <QtCore/QVector>
 #include <QtGui/QColor>
-#include <vector>
-#include <deque>
 #include <log4qt.h>
 
 
@@ -25,7 +22,7 @@ enum class Column
     ColumnCount
 };
 
-class LogDisplayModel : public QAbstractTableModel
+class log4qtDisplayModel : public QAbstractTableModel
 {
     Q_OBJECT
     Q_PROPERTY(int maxCount READ getMaxCount WRITE setMaxCount)
@@ -40,8 +37,8 @@ class LogDisplayModel : public QAbstractTableModel
     Q_PROPERTY(QColor criticalBackground MEMBER criticalBackground)
     Q_PROPERTY(QColor fatalBackground MEMBER fatalBackground)
 public:
-    explicit LogDisplayModel(QObject *parent = 0);
-    virtual ~LogDisplayModel() = default;
+    explicit log4qtDisplayModel(QObject *parent = 0);
+    virtual ~log4qtDisplayModel() = default;
 
     int getMaxCount() const;
     void setMaxCount(int value);
@@ -78,4 +75,4 @@ private:
     QColor fatalBackground = QColor::fromRgb(0x591111);
 };
 
-#endif // LOGDISPLAYMODEL_H
+#endif // LOG4QTDISPLAYMODEL_H

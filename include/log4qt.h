@@ -36,7 +36,7 @@ enum LogLevel
  * When a message is not accepted by filter, it will not be recorded, generate none performance costs
  */
 #define qtCLog(category, logLevel, ...) \
-    if(log4qt::impl::getLogEngine()->categoryFilter(category) >= logLevel) \
+    if(log4qt::impl::getLogEngine()->categoryFilter(category) < logLevel) \
         log4qt::impl::getLogEngine()->log(category, logLevel, __FILE__, __LINE__, Q_FUNC_INFO).log(__VA_ARGS__)
 #define qtCDebug(category, ...) qtCLog(category, log4qt::Debug, __VA_ARGS__)
 #define qtCInfomation(category, ...) qtCLog(category, log4qt::Infomation, __VA_ARGS__)

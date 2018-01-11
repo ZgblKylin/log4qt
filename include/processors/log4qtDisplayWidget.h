@@ -1,13 +1,12 @@
 #ifndef LOG4QTDISPLAYWIDGET_H
 #define LOG4QTDISPLAYWIDGET_H
 
-#include <QtCore/QQueue>
+#include <QtCore/QVector>
 #include <QtGui/QColor>
 #include <QtWidgets/QGroupBox>
 #include <log4qt.h>
 
 class QStackedLayout;
-
 
 // buffer for caching log messages before log4qtDisplayWidget constructed
 class LOG4QTSHARED_EXPORT LogDisplayBuffer : public log4qt::impl::ILogProcessor
@@ -18,14 +17,14 @@ public:
     virtual ~LogDisplayBuffer() = default;
 
     // take all stored log messages, stop caching log
-    QList<QSharedPointer<log4qt::impl::LogMessage>> takeAll();
+    QVector<QSharedPointer<log4qt::impl::LogMessage>> takeAll();
 
     // ILogProcessor interface
     virtual void start() override;
     Q_SLOT virtual void log(const QSharedPointer<log4qt::impl::LogMessage> message) override;
 
 private:
-    QList<QSharedPointer<log4qt::impl::LogMessage>> messages;
+    QVector<QSharedPointer<log4qt::impl::LogMessage>> messages;
 };
 
 

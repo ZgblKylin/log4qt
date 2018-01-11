@@ -1,9 +1,8 @@
-#include <QCoreApplication>
 #include <processors/log4qtFileSaver.h>
 #include "log4qtFileSaveTask.h"
 
 /* ================ LogFileSaverBase ================ */
-void setAllPageProperty(const char* name, const QVariant& value, QHash<QString, log4qtFileSaveTask*>& tasks)
+void setAllTaskProperty(const char* name, const QVariant& value, QHash<QString, log4qtFileSaveTask*>& tasks)
 {
     for(auto it = tasks.begin(); it != tasks.end(); ++ it)
         it.value()->setProperty(name, value);
@@ -73,7 +72,7 @@ qint64 log4qtFileSaverBase::getMaxFileSize() const
 void log4qtFileSaverBase::setMaxFileSize(qint64 value)
 {
     maxFileSize = value;
-    setAllPageProperty("maxFileSize", maxFileSize, tasks);
+    setAllTaskProperty("maxFileSize", maxFileSize, tasks);
 }
 
 QString log4qtFileSaverBase::getPattern() const
@@ -84,7 +83,7 @@ QString log4qtFileSaverBase::getPattern() const
 void log4qtFileSaverBase::setPattern(const QString& value)
 {
     pattern = value;
-    setAllPageProperty("pattern", log4qt::impl::parsePattern(pattern), tasks);
+    setAllTaskProperty("pattern", log4qt::impl::parsePattern(pattern), tasks);
 }
 
 int log4qtFileSaverBase::getFilter() const
@@ -95,7 +94,7 @@ int log4qtFileSaverBase::getFilter() const
 void log4qtFileSaverBase::setFilter(int value)
 {
     filter = value;
-    setAllPageProperty("filter", filter, tasks);
+    setAllTaskProperty("filter", filter, tasks);
 }
 
 

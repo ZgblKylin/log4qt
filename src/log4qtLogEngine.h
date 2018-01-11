@@ -2,8 +2,8 @@
 #define LOG4QTLOGENGINE_H
 
 #include <log4qt.h>
-#include <QtCore/QQueue>
 #include <QtCore/QMutex>
+#include <QtCore/QVector>
 #include <QtCore/QHash>
 
 class LogEngineImpl : public QObject, public log4qt::impl::LogEngine
@@ -26,7 +26,7 @@ private:
     Q_SIGNAL void newLog(QSharedPointer<log4qt::impl::LogMessage> message) const;
 
     mutable QMutex mutex;
-    QQueue<log4qt::impl::ILogProcessorBase*> processors;
+    QVector<log4qt::impl::ILogProcessorBase*> processors;
     QHash<QString, int> categories;
 };
 

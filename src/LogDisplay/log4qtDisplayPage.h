@@ -1,13 +1,12 @@
 #ifndef LOG4QTDISPLAYPAGE_H
 #define LOG4QTDISPLAYPAGE_H
 
-#include <QtCore/QQueue>
-#include <QtGui/QColor>
 #include <QtWidgets/QTableView>
+#include <QtGui/QColor>
 #include <log4qt.h>
 
-class LogDisplayModel;
-class LogDisplayFilter;
+class log4qtDisplayModel;
+class log4qtDisplayFilter;
 class QMenu;
 
 // widget for displaying log message of single category
@@ -72,8 +71,8 @@ private:
     QColor fatalBackground() const;
     void setFatalBackground(QColor color);
 
-    LogDisplayModel* model;
-    LogDisplayFilter* filterModel;
+    log4qtDisplayModel* model;
+    log4qtDisplayFilter* filterModel;
     QMenu* menu;
 };
 

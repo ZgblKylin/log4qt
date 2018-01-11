@@ -1,33 +1,30 @@
-#include <QtGui/QFontMetrics>
-#include <QtGui/QColor>
-#include <QtWidgets/QWidget>
 #include "log4qtDisplayModel.h"
 
 
-LogDisplayModel::LogDisplayModel(QObject* parent) :
+log4qtDisplayModel::log4qtDisplayModel(QObject* parent) :
     QAbstractTableModel(parent)
 {
 }
 
-int LogDisplayModel::getMaxCount() const
+int log4qtDisplayModel::getMaxCount() const
 {
     return maxCount;
 }
 
-void LogDisplayModel::setMaxCount(int value)
+void log4qtDisplayModel::setMaxCount(int value)
 {
     maxCount = value;
     checkLimit();
 }
 
-void LogDisplayModel::clear()
+void log4qtDisplayModel::clear()
 {
     beginResetModel();
     messages.clear();
     endResetModel();
 }
 
-void LogDisplayModel::newLog(QSharedPointer<log4qt::impl::LogMessage> message)
+void log4qtDisplayModel::newLog(QSharedPointer<log4qt::impl::LogMessage> message)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     messages << message;
@@ -36,17 +33,17 @@ void LogDisplayModel::newLog(QSharedPointer<log4qt::impl::LogMessage> message)
     checkLimit();
 }
 
-int LogDisplayModel::rowCount(const QModelIndex&) const
+int log4qtDisplayModel::rowCount(const QModelIndex&) const
 {
     return messages.count();
 }
 
-int LogDisplayModel::columnCount(const QModelIndex&) const
+int log4qtDisplayModel::columnCount(const QModelIndex&) const
 {
     return int(Column::ColumnCount);
 }
 
-QVariant LogDisplayModel::data(const QModelIndex& index, int role) const
+QVariant log4qtDisplayModel::data(const QModelIndex& index, int role) const
 {
     QSharedPointer<log4qt::impl::LogMessage> message = messages.at(index.row());
 
@@ -153,7 +150,7 @@ QVariant LogDisplayModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-QVariant LogDisplayModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant log4qtDisplayModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if(orientation == Qt::Vertical)
         return QAbstractTableModel::headerData(section, orientation, role);
@@ -193,7 +190,7 @@ QVariant LogDisplayModel::headerData(int section, Qt::Orientation orientation, i
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-void LogDisplayModel::checkLimit()
+void log4qtDisplayModel::checkLimit()
 {
     if(messages.count() > maxCount)
     {

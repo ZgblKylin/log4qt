@@ -1,5 +1,5 @@
-#ifndef LOGDISPLAYFILTER_H
-#define LOGDISPLAYFILTER_H
+#ifndef LOG4QTDISPLAYFILTER_H
+#define LOG4QTDISPLAYFILTER_H
 
 #include <QtCore/QSortFilterProxyModel>
 #include <QtCore/QBitArray>
@@ -7,13 +7,13 @@
 #include "log4qtDisplayModel.h"
 
 
-class LogDisplayFilter : public QSortFilterProxyModel
+class log4qtDisplayFilter : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int filter READ getFilter WRITE setFilter)
 public:
-    explicit LogDisplayFilter(LogDisplayModel* model, QObject *parent = 0);
-    virtual ~LogDisplayFilter() = default;
+    explicit log4qtDisplayFilter(log4qtDisplayModel* model, QObject *parent = 0);
+    virtual ~log4qtDisplayFilter() = default;
 
     int getFilter() const;
     void setFilter(int filter);
@@ -28,7 +28,7 @@ public:
 private:
     int filter = log4qt::impl::DefaultFilter;
     QBitArray columnsEnabled;
-    LogDisplayModel* model = nullptr;
+    log4qtDisplayModel* model = nullptr;
 };
 
-#endif // LOGDISPLAYFILTER_H
+#endif // LOG4QTDISPLAYFILTER_H

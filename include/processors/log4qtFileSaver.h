@@ -2,10 +2,7 @@
 #define LOG4QTFILESAVER_H
 
 #include <QtCore/QMutex>
-#include <QtCore/QThread>
 #include <QtCore/QDir>
-#include <QtCore/QFile>
-#include <QtCore/QTextCodec>
 #include <log4qt.h>
 
 class log4qtFileSaveTask;

@@ -2,12 +2,12 @@
 #define LOG4QTDEFS_H
 
 #include <QtCore/QtGlobal>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtCore/QString>
 #include <QtCore/QDateTime>
 #include <QtCore/QThread>
 #include <functional>
-#include <vector>
 #include <cstdarg>
 
 #if defined(LOG4QT_LIBRARY)
@@ -123,6 +123,13 @@ private:
     // callback on destruction, pushing message to LogEngine
     std::function<void(QSharedPointer<LogMessage>)> onDelete;
 };
+// forward all output to QDebug
+template<typename T>
+LogStream& operator<<(LogStream& stream, const T& val)
+{
+    dynamic_cast<QDebug&>(stream) << val;
+    return stream;
+}
 
 // patterns for formating log message
 static const QString PatternCategory = QStringLiteral("%{category}");

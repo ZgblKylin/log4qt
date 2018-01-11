@@ -13,7 +13,7 @@ LogDisplayBuffer::LogDisplayBuffer(QObject* parent) :
 {
 }
 
-QList<QSharedPointer<log4qt::impl::LogMessage>> LogDisplayBuffer::takeAll()
+QVector<QSharedPointer<log4qt::impl::LogMessage> > LogDisplayBuffer::takeAll()
 {
     log4qt::impl::getLogEngine()->unRegisterProcessor(this);
     auto ret = messages;
@@ -52,7 +52,7 @@ log4qtDisplayPage* createPage(const QString& category, QWidget* parent)
     return page;
 }
 
-void setAllPageProperty(const char* name, const QVariant& value, QStackedLayout* layout)
+void setAllTaskProperty(const char* name, const QVariant& value, QStackedLayout* layout)
 {
     for(int i = 0; i < layout->count(); ++i)
         layout->widget(i)->setProperty(name, value);
@@ -111,7 +111,7 @@ log4qtDisplayWidget::log4qtDisplayWidget(LogDisplayBuffer* buffer, QWidget* pare
     titleLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     // stacked layout to contain category pages
-    stackedLayout = new QStackedLayout(this);
+    stackedLayout = new QStackedLayout;
     layout->addLayout(stackedLayout);
     connect(stackedLayout, &QStackedLayout::currentChanged,
             [=](int index){
@@ -183,7 +183,7 @@ int log4qtDisplayWidget::getFilter() const
 void log4qtDisplayWidget::setFilter(int value)
 {
     filter = value;
-    setAllPageProperty("filter", filter, stackedLayout);
+    setAllTaskProperty("filter", filter, stackedLayout);
 }
 
 int log4qtDisplayWidget::getMaxCount() const
@@ -194,7 +194,7 @@ int log4qtDisplayWidget::getMaxCount() const
 void log4qtDisplayWidget::setMaxCount(int value)
 {
     maxCount = value;
-    setAllPageProperty("maxCount", maxCount, stackedLayout);
+    setAllTaskProperty("maxCount", maxCount, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getDebugForeground() const
@@ -205,7 +205,7 @@ QColor log4qtDisplayWidget::getDebugForeground() const
 void log4qtDisplayWidget::setDebugForeground(QColor color)
 {
     debugForeground = color;
-    setAllPageProperty("debugForeground", debugForeground, stackedLayout);
+    setAllTaskProperty("debugForeground", debugForeground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getInfomationForeground() const
@@ -216,7 +216,7 @@ QColor log4qtDisplayWidget::getInfomationForeground() const
 void log4qtDisplayWidget::setInfomationForeground(QColor color)
 {
     infomationForeground = color;
-    setAllPageProperty("infomationForeground", infomationForeground, stackedLayout);
+    setAllTaskProperty("infomationForeground", infomationForeground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getWarningForeground() const
@@ -227,7 +227,7 @@ QColor log4qtDisplayWidget::getWarningForeground() const
 void log4qtDisplayWidget::setWarningForeground(QColor color)
 {
     warningForeground = color;
-    setAllPageProperty("warningForeground", warningForeground, stackedLayout);
+    setAllTaskProperty("warningForeground", warningForeground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getCriticalForeground() const
@@ -238,7 +238,7 @@ QColor log4qtDisplayWidget::getCriticalForeground() const
 void log4qtDisplayWidget::setCriticalForeground(QColor color)
 {
     criticalForeground = color;
-    setAllPageProperty("criticalForeground", criticalForeground, stackedLayout);
+    setAllTaskProperty("criticalForeground", criticalForeground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getFatalForeground() const
@@ -249,7 +249,7 @@ QColor log4qtDisplayWidget::getFatalForeground() const
 void log4qtDisplayWidget::setFatalForeground(QColor color)
 {
     fatalForeground = color;
-    setAllPageProperty("fatalForeground", fatalForeground, stackedLayout);
+    setAllTaskProperty("fatalForeground", fatalForeground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getDebugBackground() const
@@ -260,7 +260,7 @@ QColor log4qtDisplayWidget::getDebugBackground() const
 void log4qtDisplayWidget::setDebugBackground(QColor color)
 {
     debugBackground = color;
-    setAllPageProperty("debugBackground", debugBackground, stackedLayout);
+    setAllTaskProperty("debugBackground", debugBackground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getInfomationBackground() const
@@ -271,7 +271,7 @@ QColor log4qtDisplayWidget::getInfomationBackground() const
 void log4qtDisplayWidget::setInfomationBackground(QColor color)
 {
     infomationBackground = color;
-    setAllPageProperty("infomationBackground", infomationBackground, stackedLayout);
+    setAllTaskProperty("infomationBackground", infomationBackground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getWarningBackground() const
@@ -282,7 +282,7 @@ QColor log4qtDisplayWidget::getWarningBackground() const
 void log4qtDisplayWidget::setWarningBackground(QColor color)
 {
     warningBackground = color;
-    setAllPageProperty("warningBackground", warningBackground, stackedLayout);
+    setAllTaskProperty("warningBackground", warningBackground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getCriticalBackground() const
@@ -293,7 +293,7 @@ QColor log4qtDisplayWidget::getCriticalBackground() const
 void log4qtDisplayWidget::setCriticalBackground(QColor color)
 {
     criticalBackground = color;
-    setAllPageProperty("criticalBackground", criticalBackground, stackedLayout);
+    setAllTaskProperty("criticalBackground", criticalBackground, stackedLayout);
 }
 
 QColor log4qtDisplayWidget::getFatalBackground() const
@@ -304,5 +304,5 @@ QColor log4qtDisplayWidget::getFatalBackground() const
 void log4qtDisplayWidget::setFatalBackground(QColor color)
 {
     fatalBackground = color;
-    setAllPageProperty("fatalBackground", fatalBackground, stackedLayout);
+    setAllTaskProperty("fatalBackground", fatalBackground, stackedLayout);
 }

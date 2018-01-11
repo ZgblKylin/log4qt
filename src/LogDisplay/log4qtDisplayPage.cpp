@@ -29,8 +29,8 @@ log4qtDisplayPage::log4qtDisplayPage(QWidget* parent)
     verticalHeader()->setVisible(false);
 
     // initilize model
-    model = new LogDisplayModel(this);
-    filterModel = new LogDisplayFilter(model, this);
+    model = new log4qtDisplayModel(this);
+    filterModel = new log4qtDisplayFilter(model, this);
     setModel(filterModel);
 
     // initilize context menu

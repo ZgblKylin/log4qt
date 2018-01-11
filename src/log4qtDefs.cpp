@@ -78,10 +78,10 @@ void LogStream::log(const char* format, ...)
     std::va_list args;
     va_start(args, format);
     int size = std::vsnprintf(nullptr, 0, format, args);
-    std::vector<char> buf(size + 1, '\0'); // note +1 for null terminator
+    QByteArray buf(size + 1, '\0'); // note +1 for null terminator
     std::vsnprintf(buf.data(), buf.size(), format, args);
     va_end(args);
-    (*this) << buf.data();
+    *this << buf.data();
 }
 
 

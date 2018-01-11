@@ -1,26 +1,30 @@
 #include "log4qtFileSaveTask.h"
+#include <QtCore/QFile>
+#include <QtCore/QThread>
 
 /* ================ log4qtFileSaveTask ================ */
 log4qtFileSaveTask::log4qtFileSaveTask(const QDir& defaultDir, const QString& categoryName, QObject* parent)
     : file(new QFile(this)),
       mutex(QMutex::Recursive),
-      category(categoryName)
+      category(categoryName),
+    thread(new QThread)
 {
     setDir(defaultDir.absoluteFilePath(categoryName));
 
     pattern = log4qt::impl::parsePattern(pattern);
 
-    moveToThread(&thread);
+    moveToThread(thread);
     connect(parent, &QObject::destroyed,
-            this, &QObject::deleteLater);
-    thread.start(QThread::LowPriority);
+            this, [=]{ delete this; },
+            Qt::BlockingQueuedConnection);
+    thread->start(QThread::LowPriority);
 }
 
 log4qtFileSaveTask::~log4qtFileSaveTask()
 {
     closeFile();
-    thread.quit();
-    thread.wait();
+    thread->quit();
+    thread->deleteLater();
 }
 
 void log4qtFileSaveTask::record(const QSharedPointer<log4qt::impl::LogMessage> message)
@@ -36,7 +40,7 @@ void log4qtFileSaveTask::record(const QSharedPointer<log4qt::impl::LogMessage> m
     QByteArray bytes;
     QTextStream ts(&bytes, QIODevice::ReadWrite | QIODevice::Text);
     ts.setCodec(codec);
-    ts << text;
+    ts << text << endl;
     ts.flush();
 
     refreshFile();
@@ -54,6 +58,7 @@ void log4qtFileSaveTask::setDir(const QString& path)
     dir.setPath(path);
     if(!dir.exists())
         dir.mkpath(dir.absolutePath());
+    closeFile();
 }
 
 void log4qtFileSaveTask::refreshFile()

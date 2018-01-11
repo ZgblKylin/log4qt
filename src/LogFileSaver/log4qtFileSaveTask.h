@@ -2,11 +2,12 @@
 #define LOG4QTFILESAVETASK_H
 
 #include <QtCore/QMutex>
-#include <QtCore/QThread>
 #include <QtCore/QDir>
-#include <QtCore/QFile>
 #include <QtCore/QTextCodec>
 #include <log4qt.h>
+
+class QFile;
+class QThread;
 
 // base class for save log messages into file
 class log4qtFileSaveTask : public QObject
@@ -47,7 +48,7 @@ private:
     QString category;
     mutable QMutex mutex;
     QTextCodec* codec = QTextCodec::codecForName("UTF-8"); // log file codec, UTF-8 for default
-    QThread thread;     // log file save will be run in separate thread
+    QThread* thread;    // log file save will be run in separate thread
     QString fileName;   // log file name
     int fileIndex = 1;  // current file index, used for preventing duplication of name
 };
