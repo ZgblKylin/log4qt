@@ -77,7 +77,7 @@ log4qtDisplayWidget::log4qtDisplayWidget(LogDisplayBuffer* buffer, QWidget* pare
     titleLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     // title
-    QLabel* title = new QLabel(tr("Log"), this);
+    QLabel* title = new QLabel(this);
     titleLayout->addWidget(title);
 
     // left button in title layout
@@ -113,14 +113,6 @@ log4qtDisplayWidget::log4qtDisplayWidget(LogDisplayBuffer* buffer, QWidget* pare
     // stacked layout to contain category pages
     stackedLayout = new QStackedLayout;
     layout->addLayout(stackedLayout);
-    connect(stackedLayout, &QStackedLayout::currentChanged,
-            [=](int index){
-        log4qtDisplayPage* page = qobject_cast<log4qtDisplayPage*>(stackedLayout->widget(index));
-        QString text = tr("Log");
-        if(!page->property("category").toString().isEmpty())
-            text = tr("Log - %1").arg(page->property("category").toString());
-        title->setText(text);
-    });
     stackedLayout->addWidget(createPage(QString(), this));
 
     // change objectName for all children
@@ -146,6 +138,11 @@ log4qtDisplayWidget::log4qtDisplayWidget(LogDisplayBuffer* buffer, QWidget* pare
         for(auto message : buffer->takeAll())
             log(message);
     }
+
+    connect(stackedLayout, &QStackedLayout::currentChanged,
+            this, &log4qtDisplayWidget::retranslateUi);
+
+    retranslateUi();
 }
 
 QWidget* log4qtDisplayWidget::getPage(const QString& category) const
@@ -173,6 +170,22 @@ void log4qtDisplayWidget::log(const QSharedPointer<log4qt::impl::LogMessage> mes
         stackedLayout->addWidget(page);
     }
     page->log(message);
+}
+
+void log4qtDisplayWidget::changeEvent(QEvent* event)
+{
+    QWidget::changeEvent(event);
+    if(event->type() == QEvent::LanguageChange)
+        retranslateUi();
+}
+
+void log4qtDisplayWidget::retranslateUi()
+{
+    log4qtDisplayPage* page = qobject_cast<log4qtDisplayPage*>(stackedLayout->currentWidget());
+    QString text = tr("Log");
+    if(!page->property("category").toString().isEmpty())
+        text = tr("Log - %1").arg(page->property("category").toString());
+    findChild<QLabel*>(objectName() + "_title")->setText(text);
 }
 
 int log4qtDisplayWidget::getFilter() const

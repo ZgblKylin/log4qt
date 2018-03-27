@@ -63,7 +63,12 @@ public:
     virtual void start() override;
     Q_SLOT virtual void log(const QSharedPointer<log4qt::impl::LogMessage> message) override;
 
+protected:
+    virtual void changeEvent(QEvent* event) override;
+
 private:
+    void retranslateUi();
+
     int getFilter() const;
     void setFilter(int value);
 
