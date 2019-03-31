@@ -3,8 +3,10 @@
 [![LICENSE](https://img.shields.io/badge/license-NPL%20(The%20996%20Prohibited%20License)-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
 
 ## License
-This work is dual-licensed under MIT and 996ICU 1.0 (or any later version).
-You must follow both of them if you use this work.
+This work is dual-licensed under [MIT](https://mit-license.org/) and 
+[996ICU 1.0 (or any later version)](https://github.com/996icu/996.ICU/blob/master/LICENSE).
+
+You must follow **BOTH** of them if you use this work.
 
 ## Details
 A light weight logging framework for Qt5 with:
