@@ -1,4 +1,6 @@
 # log4qt
+[![996.ICU](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
+
 A light weight logging framework for Qt5 with:
   - high performance ( more than 100,000 logs per sec )
   - Custom category and level control
