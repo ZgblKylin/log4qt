@@ -4,7 +4,7 @@
 
 ## License
 This work is dual-licensed under [MIT](https://mit-license.org/) and 
-[996ICU 1.0 (or any later version)](https://github.com/996icu/996.ICU/blob/master/LICENSE).
+[Anti996 1.0 (or any later version)](https://github.com/996icu/996.ICU/blob/master/LICENSE).
 
 You must follow **BOTH** of them if you use this work.
 
