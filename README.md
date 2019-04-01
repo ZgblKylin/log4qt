@@ -1,6 +1,6 @@
 # log4qt
 [![LICENSE](https://img.shields.io/badge/license-MIT-green.svg)](https://mit-license.org/)
-[![LICENSE](https://img.shields.io/badge/license-NPL%20(The%20996%20Prohibited%20License)-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
+[![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
 
 ## License
 This work is dual-licensed under MIT and 996ICU 1.0 (or any later version).
