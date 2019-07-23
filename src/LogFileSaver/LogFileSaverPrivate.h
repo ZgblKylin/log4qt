@@ -16,7 +16,11 @@ public:
 class LogFileSaverPrivate
 {
 public:
-    LogFileSaverPrivate(QObject* parent) : q_ptr(parent) {}
+    LogFileSaverPrivate(QObject* parent)
+        : mutex(QMutex::Recursive),
+          q_ptr(parent)
+    {}
+
     virtual ~LogFileSaverPrivate() = default;
 
     // ILogProcessor interface

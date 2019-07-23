@@ -17,6 +17,7 @@ public:
 Q_GLOBAL_STATIC(LogEnginePrivate, engine)
 
 LogEnginePrivate::LogEnginePrivate()
+    : mutex(QMutex::Recursive)
 {
     qRegisterMetaType<QtMsgType>();
     qRegisterMetaType<log4qt::LogMessage>();

@@ -13,7 +13,10 @@ class LogDisplayBufferPrivate
     LogDisplayBuffer* q_ptr;
 
 public:
-    LogDisplayBufferPrivate(LogDisplayBuffer* parent) : q_ptr(parent) {}
+    LogDisplayBufferPrivate(LogDisplayBuffer* parent)
+        : q_ptr(parent),
+          mutex(QMutex::Recursive)
+    {}
 
     mutable QMutex mutex;
     std::vector<LogMessage> messages;

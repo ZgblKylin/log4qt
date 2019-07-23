@@ -5,6 +5,7 @@ namespace log4qt {
 LogFileSaveTask::LogFileSaveTask(const QDir& defaultDir, const QString& categoryName, QObject* parent)
     : file(new QFile(this)),
       category(categoryName),
+      mutex(QMutex::Recursive),
       thread(new QThread)
 {
     setDir(defaultDir.absoluteFilePath(categoryName));
