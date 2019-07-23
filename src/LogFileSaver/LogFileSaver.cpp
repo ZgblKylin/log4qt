@@ -189,7 +189,7 @@ LogFileSaveTask* LogFileMmapSaverPrivate::createTask(const QString& category)
 
 LogFileMmapSaver::LogFileMmapSaver(QObject *parent)
     : QObject(parent),
-      d_ptr(new LogFileMmapSaverPrivate(parent))
+      d_ptr(new LogFileMmapSaverPrivate(this))
 {
 }
 
