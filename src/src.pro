@@ -22,4 +22,4 @@ unix {
     INSTALLS += target
 }
 
-include(src.pri)
+include(log4qt.pri)
