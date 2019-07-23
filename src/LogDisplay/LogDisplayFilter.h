@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include <QtCore/QSortFilterProxyModel>
-#include <QtCore/QBitArray>
+#include "../Common.h"
 #include "LogDisplayModel.h"
 
 namespace log4qt {

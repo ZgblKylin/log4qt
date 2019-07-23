@@ -1,24 +1,8 @@
 ﻿#pragma once
 
-#include <mutex>
-#include <shared_mutex>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QThread>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QDialogButtonBox>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QInputDialog>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QScrollBar>
-#include <QtWidgets/QStackedLayout>
-#include <QtWidgets/QToolButton>
-#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QtWidgets>
 #include <processors/LogDisplayWidget.h>
+#include "../Common.h"
 #include "LogDisplayModel.h"
 #include "LogDisplayFilter.h"
 
@@ -31,7 +15,7 @@ class LogDisplayBufferPrivate
 public:
     LogDisplayBufferPrivate(LogDisplayBuffer* parent) : q_ptr(parent) {}
 
-    std::shared_mutex mutex; // use as spin-lock
+    mutable QMutex mutex;
     std::vector<LogMessage> messages;
 };
 

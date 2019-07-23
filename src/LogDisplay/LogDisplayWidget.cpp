@@ -15,14 +15,16 @@ LogDisplayBuffer::~LogDisplayBuffer()
 void LogDisplayBuffer::log(QtMsgType type, const QMessageLogContext& context, const QString& buf)
 {
     Q_D(LogDisplayBuffer);
-    std::unique_lock lock(d->mutex);
+    while (!d->mutex.tryLock()) {}
+    defer [d]{ d->mutex.unlock(); };
     d->messages.emplace_back(type, context, buf);
 }
 
 std::vector<LogMessage> LogDisplayBuffer::takeAll()
 {
     Q_D(LogDisplayBuffer);
-    std::unique_lock lock(d->mutex);
+    while (!d->mutex.tryLock()) {}
+    defer [d]{ d->mutex.unlock(); };
     LogEngine::unRegisterProcessor(this);
     return std::move(d->messages);
 }

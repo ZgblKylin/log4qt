@@ -1,5 +1,4 @@
 ﻿#include "LogFileSaveTask.h"
-#include <mutex>
 
 namespace log4qt {
 /* ================ LogFileSaveTask ================ */
@@ -23,7 +22,8 @@ LogFileSaveTask::LogFileSaveTask(const QDir& defaultDir, const QString& category
 
 LogFileSaveTask::~LogFileSaveTask()
 {
-    std::unique_lock lock(mutex);
+    while(!mutex.tryLock()) {}
+    defer [this]{ mutex.unlock(); };
     closeFile();
     thread->quit();
     thread->deleteLater();
@@ -41,7 +41,8 @@ void LogFileSaveTask::record(const QSharedPointer<LogMessage> message)
     ts << text << endl;
     ts.flush();
 
-    std::unique_lock lock(mutex);
+    while(!mutex.tryLock()) {}
+    defer [this]{ mutex.unlock(); };
     refreshFile();
     save(bytes);
 }
@@ -53,7 +54,8 @@ QString LogFileSaveTask::dir() const
 
 void LogFileSaveTask::setDir(const QString& path)
 {
-    std::unique_lock lock(mutex);
+    while(!mutex.tryLock()) {}
+    defer [this]{ mutex.unlock(); };
     dr.setPath(path);
     if(!dr.exists()) dr.mkpath(dr.absolutePath());
     closeFile();

@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += widgets sql
-CONFIG   += c++17
+CONFIG   += c++11
 
 TEMPLATE = lib
 CONFIG(release, debug|release): TARGET = log4qt
@@ -46,6 +46,7 @@ HEADERS += \
     ../include/processors/LogFileSaver.h \
     ../include/processors/LogDisplayWidget.h \
     ../include/processors/LogSqlSaver.h \
+    Common.h \
     LogFileSaver/LogFileSaveTask.h \
     LogFileSaver/LogFileSaverPrivate.h \
     LogDisplay/LogDisplayModel.h \

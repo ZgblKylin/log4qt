@@ -1,8 +1,7 @@
 ﻿#include <processors/LogSqlSaver.h>
-#include <QtCore/QtDebug>
-#include <QtCore/QThread>
-#include <QtSql/QSqlError>
-#include <QtCore/QCoreApplication>
+#include <QtCore/QtCore>
+#include <QtSql/QtSql>
+#include "../Common.h"
 
 namespace log4qt {
 class LogSqlSaverPrivate

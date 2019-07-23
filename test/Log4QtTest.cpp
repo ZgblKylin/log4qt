@@ -1,6 +1,6 @@
 ﻿#include "Log4QtTest.h"
 
-QLoggingCategory Test("test");
+static QLoggingCategory Test("test");
 
 int TestProcessor::count() const
 {
@@ -35,11 +35,11 @@ void Log4QtTest::engineProfile()
 
 void Log4QtTest::typeToString()
 {
-    QCOMPARE(log4qt::typeToString(QtDebugMsg), "Debug");
-    QCOMPARE(log4qt::typeToString(QtWarningMsg), "Warning");
-    QCOMPARE(log4qt::typeToString(QtCriticalMsg), "Critical");
-    QCOMPARE(log4qt::typeToString(QtFatalMsg), "Fatal");
-    QCOMPARE(log4qt::typeToString(QtInfoMsg), "Information");
+    QCOMPARE(log4qt::typeToString(QtDebugMsg), QStringLiteral("Debug"));
+    QCOMPARE(log4qt::typeToString(QtWarningMsg), QStringLiteral("Warning"));
+    QCOMPARE(log4qt::typeToString(QtCriticalMsg), QStringLiteral("Critical"));
+    QCOMPARE(log4qt::typeToString(QtFatalMsg), QStringLiteral("Fatal"));
+    QCOMPARE(log4qt::typeToString(QtInfoMsg), QStringLiteral("Information"));
 }
 
 void Log4QtTest::formatMessage()
@@ -140,7 +140,7 @@ void Log4QtTest::logDisplayBuffer()
     qDebug() << "test" << "engine"
              << "i=" << 1
              << "f=" << 3.14;
-    QCOMPARE(buffer.takeAll().size(), 1);
+    QCOMPARE(buffer.takeAll().size(), 1u);
 
     qDebug() << "test" << "engine"
              << "i=" << 1
@@ -183,7 +183,7 @@ void Log4QtTest::logDisplayPageColor()
     QFETCH(QString, property);
     QFETCH(QColor, color);
     page.setProperty(property.toUtf8().constData(), color);
-    QCOMPARE(page.property(property.toUtf8().constData()), color);
+    QCOMPARE(page.property(property.toUtf8().constData()).value<QColor>(), color);
 }
 
 void Log4QtTest::logDisplayPage()
@@ -194,9 +194,9 @@ void Log4QtTest::logDisplayPage()
     page.setFilter(QtDebugMsg);
     QCOMPARE(page.filter(), QtDebugMsg);
 
-    QCOMPARE(page.maxCount(), 10000);
+    QCOMPARE(page.maxCount(), 10000u);
     page.setMaxCount(100);
-    QCOMPARE(page.maxCount(), 100);
+    QCOMPARE(page.maxCount(), 100u);
 
     log4qt::LogDisplayBuffer buffer;
     buffer.start();
@@ -250,7 +250,7 @@ void Log4QtTest::logDisplayWidgetColor()
     QFETCH(QString, property);
     QFETCH(QColor, color);
     widget.setProperty(property.toUtf8().constData(), color);
-    QCOMPARE(widget.property(property.toUtf8().constData()), color);
+    QCOMPARE(widget.property(property.toUtf8().constData()).value<QColor>(), color);
 }
 
 void Log4QtTest::logDisplayWidget()

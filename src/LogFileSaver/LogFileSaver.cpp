@@ -1,6 +1,4 @@
-﻿#include <processors/LogFileSaver.h>
-#include <mutex>
-#include "LogFileSaverPrivate.h"
+﻿#include "LogFileSaverPrivate.h"
 
 namespace log4qt {
 /* ================ LogFileSaverPrivate ================ */
@@ -11,7 +9,8 @@ QObject* LogFileSaverPrivate::getTask(const QString& category) const
 
 void LogFileSaverPrivate::log(QSharedPointer<LogMessage>&& message)
 {
-    std::unique_lock lock(mutex);
+    while(!mutex.tryLock()) {}
+    defer [this]{ mutex.unlock(); };
     if(Q_UNLIKELY(!dirInited))
     {
         setDir(qApp->applicationDirPath()
@@ -40,7 +39,8 @@ QString LogFileSaverPrivate::dir() const
 
 void LogFileSaverPrivate::setDir(const QString& path)
 {
-    std::unique_lock lock(mutex);
+    while(!mutex.tryLock()) {}
+    defer [this]{ mutex.unlock(); };
     dirInited = true;
     dr.setPath(path);
     if(!dr.exists()) dr.mkpath(dr.absolutePath());

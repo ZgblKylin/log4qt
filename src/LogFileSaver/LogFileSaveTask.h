@@ -1,12 +1,7 @@
 ﻿#pragma once
 
-#include <shared_mutex>
-#include <QtCore/QDir>
-#include <QtCore/QFile>
-#include <QtCore/QTextCodec>
-#include <QtCore/QtGlobal>
-#include <QtCore/QThread>
 #include <log4qt.h>
+#include "../Common.h"
 
 namespace log4qt {
 // base class for save log messages into file
@@ -47,7 +42,7 @@ private:
     QtMsgType filter = QtWarningMsg; // message with level under will not be recorded
 
     QString category;
-    mutable std::shared_mutex mutex;
+    mutable QMutex mutex;
     QTextCodec* codec = QTextCodec::codecForName("UTF-8"); // log file codec, UTF-8 for default
     QThread* thread;    // log file save will be run in separate thread
     QString fileName;   // log file name

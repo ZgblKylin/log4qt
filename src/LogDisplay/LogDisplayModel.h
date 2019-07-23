@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include <vector>
-#include <QtCore/QAbstractTableModel>
-#include <QtGui/QColor>
+#include <QtGui/QtGui>
 #include <processors/LogDisplayWidget.h>
+#include "../Common.h"
 
 namespace log4qt {
 // Column indexes, correspond to LogMessage

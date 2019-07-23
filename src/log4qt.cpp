@@ -1,10 +1,5 @@
 ﻿#include <log4qt.h>
-#include <mutex>
-#include <shared_mutex>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QThread>
-#include <QtCore/private/qobject_p.h>
-#include <QtCore/QVector>
+#include "Common.h"
 
 namespace log4qt {
 /* ================ LogEngine Implementation ================ */
@@ -16,7 +11,7 @@ public:
     static void messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& buf);
     void handleMessage(QtMsgType type, const QMessageLogContext& context, const QString& buf);
 
-    std::shared_mutex mutex;
+    mutable QMutex mutex;
     QVector<ILogProcessor*> processors;
 };
 Q_GLOBAL_STATIC(LogEnginePrivate, engine)
@@ -36,7 +31,8 @@ void LogEnginePrivate::messageHandler(QtMsgType type, const QMessageLogContext& 
 
 void LogEnginePrivate::handleMessage(QtMsgType type, const QMessageLogContext& context, const QString& buf)
 {
-    std::shared_lock lock(mutex);
+    while (!mutex.tryLock()) {}
+    defer [this]{ mutex.unlock(); };
     for (ILogProcessor* processor : processors) {
         processor->log(type, context, buf);
     }
@@ -45,7 +41,8 @@ void LogEnginePrivate::handleMessage(QtMsgType type, const QMessageLogContext& c
 namespace LogEngine {
 void registerProcessor(ILogProcessor* processor)
 {
-    std::unique_lock lock(engine->mutex);
+    while (!engine->mutex.tryLock()) {}
+    defer []{ engine->mutex.unlock(); };
     if (!engine->processors.contains(processor)) {
         engine->processors.append(processor);
     }
@@ -53,8 +50,12 @@ void registerProcessor(ILogProcessor* processor)
 
 void unRegisterProcessor(ILogProcessor* processor)
 {
-    std::unique_lock lock(engine->mutex);
-    engine->processors.removeOne(processor);
+    while (!engine->mutex.tryLock()) {}
+    defer []{ engine->mutex.unlock(); };
+    int index = engine->processors.indexOf(processor);
+    if (index >= 0) {
+        engine->processors.remove(index);
+    }
 }
 } // namespace LogEngine
 /* ================ LogEngine Implementation ================ */

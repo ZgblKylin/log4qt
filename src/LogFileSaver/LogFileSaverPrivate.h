@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include <QtCore/QCoreApplication>
 #include <processors/LogFileSaver.h>
 #include "LogFileSaveTask.h"
+#include "../Common.h"
 
 namespace log4qt {
 class LogFileSaverBase : public QObject
@@ -43,7 +43,7 @@ public:
     void setAllTaskProperty(const char* name, const QVariant& value);
 
     QHash<QString, LogFileSaveTask*> tasks; // file save task for each category
-    mutable std::shared_mutex mutex;
+    mutable QMutex mutex;
 
     // properties
     bool dirInited = false;
