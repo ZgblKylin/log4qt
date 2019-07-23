@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QtWidgets/QMainWindow>
@@ -12,11 +12,12 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit MainWindow(QWidget* parent = 0);
-    virtual ~MainWindow();
+    explicit MainWindow(QWidget* parent = nullptr);
+    virtual ~MainWindow() override final;
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
+    QMap<QByteArray, QLoggingCategory*> categories;
 };
 
 #endif // MAINWINDOW_H

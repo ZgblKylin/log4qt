@@ -5,14 +5,30 @@
 #-------------------------------------------------
 
 QT       += widgets sql
-CONFIG   += c++11
+CONFIG   += c++17
 
-TARGET = log4qt
 TEMPLATE = lib
+CONFIG(release, debug|release): TARGET = log4qt
+CONFIG(debug, debug|release): TARGET = log4qtd
+
+DESTDIR = $${_PRO_FILE_PWD_}/../lib
+DLLDESTDIR = $${_PRO_FILE_PWD_}/../lib
+CONFIG(debug, debug|release) {
+    OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/debug/obj
+    MOC_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/debug/moc
+    RCC_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/debug/rcc
+    UI_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/debug/uic
+} else {
+    OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/release/obj
+    MOC_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/release/moc
+    RCC_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/release/rcc
+    UI_DIR = $${_PRO_FILE_PWD_}/../build/log4qt/release/uic
+}
 
 DEFINES += LOG4QT_LIBRARY
 
-INCLUDEPATH += $$_PRO_FILE_PWD_/../include
+INCLUDEPATH += \
+    $$_PRO_FILE_PWD_/../include
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -26,28 +42,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 HEADERS += \
     ../include\log4qt.h \
-    ../include/log4qtDefs.h \
-    log4qtLogEngine.h \
-    ../include/processors/log4qtDebugOutput.h \
-    ../include/processors/log4qtDisplayWidget.h \
-    ../include/processors/log4qtFileSaver.h \
-    LogDisplay/log4qtDisplayFilter.h \
-    LogDisplay/log4qtDisplayModel.h \
-    ../include/processors/log4qtSqlSaver.h \
-    LogDisplay/log4qtDisplayPage.h \
-    LogFileSaver/log4qtFileSaveTask.h
+    ../include/processors/LogDebugOutput.h \
+    ../include/processors/LogFileSaver.h \
+    ../include/processors/LogDisplayWidget.h \
+    ../include/processors/LogSqlSaver.h \
+    LogFileSaver/LogFileSaveTask.h \
+    LogFileSaver/LogFileSaverPrivate.h \
+    LogDisplay/LogDisplayModel.h \
+    LogDisplay/LogDisplayFilter.h \
+    LogDisplay/LogDisplayWidgetPrivate.h
 
 SOURCES += \
-    log4qtDefs.cpp \
-    log4qtLogEngine.cpp \
-    LogDebugOutput/log4qtDebugOutput.cpp \
-    LogDisplay/log4qtDisplayFilter.cpp \
-    LogDisplay/log4qtDisplayModel.cpp \
-    LogDisplay/log4qtDisplayWidget.cpp \
-    LogFileSaver/log4qtFileSaver.cpp \
-    log4qtSql/log4qtSqlSaver.cpp \
-    LogDisplay/log4qtDisplayPage.cpp \
-    LogFileSaver/log4qtFileSaveTask.cpp
+    log4qt.cpp \
+    LogDebugOutput/LogDebugOutput.cpp \
+    LogFileSaver/LogFileSaver.cpp \
+    LogFileSaver/LogFileSaveTask.cpp \
+    LogDisplay/LogDisplayModel.cpp \
+    LogDisplay/LogDisplayFilter.cpp \
+    LogDisplay/LogDisplayWidget.cpp \
+    LogSqlSaver/LogSqlSaver.cpp
 
 DISTFILES += \
     log4qt.ts

@@ -1,57 +1,58 @@
-#include "log4qtDisplayModel.h"
+﻿#include "LogDisplayModel.h"
 
-
-log4qtDisplayModel::log4qtDisplayModel(QObject* parent) :
-    QAbstractTableModel(parent)
+namespace log4qt {
+LogDisplayModel::LogDisplayModel(QObject* parent)
+    : QAbstractTableModel(parent)
 {
 }
 
-int log4qtDisplayModel::getMaxCount() const
+size_t LogDisplayModel::maxCount() const
 {
-    return maxCount;
+    return max;
 }
 
-void log4qtDisplayModel::setMaxCount(int value)
+void LogDisplayModel::setMaxCount(size_t value)
 {
-    maxCount = value;
+    max = value;
     checkLimit();
 }
 
-void log4qtDisplayModel::clear()
+void LogDisplayModel::clear()
 {
     beginResetModel();
     messages.clear();
     endResetModel();
 }
 
-void log4qtDisplayModel::newLog(QSharedPointer<log4qt::impl::LogMessage> message)
+void LogDisplayModel::log(LogMessage&& message)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    messages << message;
+    messages.emplace_back(message);
     endInsertRows();
 
     checkLimit();
 }
 
-int log4qtDisplayModel::rowCount(const QModelIndex&) const
+int LogDisplayModel::rowCount(const QModelIndex&) const
 {
-    return messages.count();
+    return int(messages.size());
 }
 
-int log4qtDisplayModel::columnCount(const QModelIndex&) const
+int LogDisplayModel::columnCount(const QModelIndex&) const
 {
     return int(Column::ColumnCount);
 }
 
-QVariant log4qtDisplayModel::data(const QModelIndex& index, int role) const
+QVariant LogDisplayModel::data(const QModelIndex& index, int role) const
 {
-    QSharedPointer<log4qt::impl::LogMessage> message = messages.at(index.row());
+    const LogMessage& message = messages.at(size_t(index.row()));
 
     switch(role)
     {
     case Qt::TextAlignmentRole:
         switch(Column(index.column()))
         {
+        case Column::Category:
         case Column::DateTime:
         case Column::Level:
         case Column::Process:
@@ -65,29 +66,33 @@ QVariant log4qtDisplayModel::data(const QModelIndex& index, int role) const
     case Qt::AccessibleTextRole:
         switch(Column(index.column()))
         {
+        case Column::Category:
+            return message.category;
         case Column::DateTime:
-            return message->dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss zzz"));
+            return message.dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss zzz"));
         case Column::Level:
-            return QStringLiteral("%1(%2)")
-                    .arg(log4qt::impl::getLogTypeString(message->type)).arg(message->level);
+            return typeToString(message.type);
         case Column::Process:
-            return message->pid;
+            return QStringLiteral("%1(%2)")
+                    .arg(message.appName)
+                    .arg(message.pid);
         case Column::ThreadId:
-            return QStringLiteral("@%1")
-                    .arg(quintptr(message->threadid), sizeof(quintptr) * 2, 16, QLatin1Char('0'))
-                    .toUpper();
+            return QStringLiteral("%1").arg(quintptr(message.threadId));
         case Column::ThreadPtr:
             return QStringLiteral("@%1")
-                    .arg(quintptr(message->threadptr), sizeof(quintptr) * 2, 16, QLatin1Char('0'))
+                    .arg(quintptr(message.threadPtr),
+                         sizeof(quintptr) * 2,
+                         16,
+                         QLatin1Char('0'))
                     .toUpper();
         case Column::FileLine:
             return QStringLiteral("%1:%2")
-                    .arg(message->file)
-                    .arg(message->line);
+                    .arg(message.file)
+                    .arg(message.line);
         case Column::Function:
-            return message->function;
+            return message.function;
         case Column::Message:
-            return *(message->message);
+            return message.message;
         default:
             break;
         };
@@ -95,53 +100,55 @@ QVariant log4qtDisplayModel::data(const QModelIndex& index, int role) const
     case Qt::UserRole:
         switch(Column(index.column()))
         {
+        case Column::Category:
+            return message.category;
         case Column::DateTime:
-            return message->dateTime;
+            return message.dateTime;
         case Column::Level:
-            return message->level;
+            return message.type;
         case Column::Process:
-            return message->pid;
+            return QVariant::fromValue(qMakePair(message.appName, message.pid));
         case Column::ThreadId:
-            return quintptr(message->threadid);
+            return quintptr(message.threadId);
         case Column::ThreadPtr:
-            return quintptr(message->threadptr);
+            return quintptr(message.threadPtr);
         case Column::FileLine:
-            return QVariant::fromValue(qMakePair(message->file, message->line));
+            return QVariant::fromValue(qMakePair(message.file, message.line));
         case Column::Function:
-            return message->function;
+            return message.function;
         case Column::Message:
-            return *(message->message);
+            return message.message;
         default:
             break;
         };
         break;
     case Qt::ForegroundRole:
-        switch(message->type)
+        switch(message.type)
         {
-        case log4qt::Debug:
+        case QtDebugMsg:
             return debugForeground;
-        case log4qt::Infomation:
-            return infomationForeground;
-        case log4qt::Warning:
+        case QtWarningMsg:
             return warningForeground;
-        case log4qt::Critical:
+        case QtCriticalMsg:
             return criticalForeground;
-        case log4qt::Fatal:
+        case QtFatalMsg:
             return fatalForeground;
+        case QtInfoMsg:
+            return informationForeground;
         }
     case Qt::BackgroundRole:
-        switch(message->type)
+        switch(message.type)
         {
-        case log4qt::Debug:
+        case QtDebugMsg:
             return debugBackground;
-        case log4qt::Infomation:
-            return infomationBackground;
-        case log4qt::Warning:
+        case QtWarningMsg:
             return warningBackground;
-        case log4qt::Critical:
+        case QtCriticalMsg:
             return criticalBackground;
-        case log4qt::Fatal:
+        case QtFatalMsg:
             return fatalBackground;
+        case QtInfoMsg:
+            return informationBackground;
         }
     default:
         return QVariant();
@@ -150,7 +157,7 @@ QVariant log4qtDisplayModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-QVariant log4qtDisplayModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant LogDisplayModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if(orientation == Qt::Vertical)
         return QAbstractTableModel::headerData(section, orientation, role);
@@ -164,6 +171,8 @@ QVariant log4qtDisplayModel::headerData(int section, Qt::Orientation orientation
     case Qt::AccessibleTextRole:
         switch(Column(section))
         {
+        case Column::Category:
+            return tr("Category");
         case Column::DateTime:
             return tr("DateTime");
         case Column::Level:
@@ -190,13 +199,14 @@ QVariant log4qtDisplayModel::headerData(int section, Qt::Orientation orientation
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-void log4qtDisplayModel::checkLimit()
+void LogDisplayModel::checkLimit()
 {
-    if(messages.count() > maxCount)
+    if(messages.size() > max)
     {
-        int removeCount = messages.count() - maxCount;
+        int removeCount = int(messages.size() - max);
         beginRemoveRows(QModelIndex(), 0, removeCount - 1);
         messages.erase(messages.begin(), messages.begin() + removeCount);
         endRemoveRows();
     }
 }
+} // namespace log4qt

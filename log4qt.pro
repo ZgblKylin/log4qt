@@ -2,7 +2,8 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     src \
-    example
+    example \
+    test
 
 CONFIG += ordered
 

@@ -1,4 +1,4 @@
-#include <processors/log4qtDisplayWidget.h>
+﻿#include <processors/LogDisplayWidget.h>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
@@ -8,15 +8,37 @@ MainWindow::MainWindow(QWidget* parent) :
 {
     ui->setupUi(this);
 
-    LogDisplayBuffer* buffer = new LogDisplayBuffer(this);
-    log4qtDisplayWidget* widget = new log4qtDisplayWidget(buffer, this);
+    log4qt::LogDisplayWidget* widget = new log4qt::LogDisplayWidget(this);
     ui->verticalLayout->addWidget(widget);
-    buffer->start();
     widget->start();
 
     connect(ui->ok, &QPushButton::clicked,
             this, [=]{
-        qtCLog(ui->category->text(), ui->level->value()) << ui->message->text();
+        QByteArray category = ui->category->text().toUtf8();
+        if (!categories.contains(category))
+        {
+            auto it = categories.insert(category, nullptr);
+            it.value() = new QLoggingCategory(it.key().constData());
+        }
+        QLoggingCategory& c = *(categories[category]);
+        switch (QtMsgType(ui->level->currentIndex()))
+        {
+        case QtDebugMsg:
+            qCDebug(c) << ui->message->text();
+            break;
+        case QtWarningMsg:
+            qCWarning(c) << ui->message->text();
+            break;
+        case QtCriticalMsg:
+            qCCritical(c) << ui->message->text();
+            break;
+        case QtFatalMsg:
+            qFatal(ui->message->text().toUtf8().constData());
+            break;
+        case QtInfoMsg:
+            qCInfo(c) << ui->message->text();
+            break;
+        }
     });
 }
 

@@ -1,35 +1,36 @@
-#include "MainWindow.h"
-#include <processors/log4qtDebugOutput.h>
-#include <processors/log4qtFileSaver.h>
+﻿#include "MainWindow.h"
+#include <processors/LogDebugOutput.h>
+#include <processors/LogFileSaver.h>
 #include <QtWidgets/QApplication>
+#include <type_traits>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-    a.setAttribute(Qt::AA_EnableHighDpiScaling);
+    app.setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    auto debug = new log4qtDebugOutput(&a);
+    auto debug = new log4qt::LogDebugOutput(&app);
     debug->start();
 
-    auto normal = new log4qtFileNormalSaver(&a);
-    normal->setProperty("dir", "./normal");
+    auto normal = new log4qt::LogFileNormalSaver(&app);
+    normal->setDir(QStringLiteral("./normal"));
     normal->start();
 
-    auto mmap = new log4qtFileMmapSaver(&a);
-    mmap->setProperty("dir", "./mmap");
+    auto mmap = new log4qt::LogFileMmapSaver(&app);
+    mmap->setDir(QStringLiteral("./mmap"));
     mmap->start();
 
     MainWindow w;
     w.show();
 
-    qtDebug("Hello World!");
-    qtInfomation("Hello World!");
-    qtWarning("Hello World!");
-    qtCritical("Hello World!");
-    qtFatal("Hello World!");
+    qDebug() << "Hello World!";
+    qInfo() << "Hello World!";
+    qWarning() << "Hello World!";
+    qCritical() << "Hello World!";
+//    qFatal("Hello World!");
 
-    return a.exec();
+    return app.exec();
 }

@@ -5,12 +5,26 @@
 #-------------------------------------------------
 
 QT       += core gui
-CONFIG   += c++11
+CONFIG   += c++17
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = example
+CONFIG(release, debug|release): TARGET = example
+CONFIG(debug, debug|release): TARGET = exampled
 TEMPLATE = app
+
+DESTDIR = $${_PRO_FILE_PWD_}/../bin
+CONFIG(debug, debug|release) {
+    OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/example/debug/obj
+    MOC_DIR = $${_PRO_FILE_PWD_}/../build/example/debug/moc
+    RCC_DIR = $${_PRO_FILE_PWD_}/../build/example/debug/rcc
+    UI_DIR = $${_PRO_FILE_PWD_}/../build/example/debug/uic
+} else {
+    OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/example/release/obj
+    MOC_DIR = $${_PRO_FILE_PWD_}/../build/example/release/moc
+    RCC_DIR = $${_PRO_FILE_PWD_}/../build/example/release/rcc
+    UI_DIR = $${_PRO_FILE_PWD_}/../build/example/release/uic
+}
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -34,8 +48,20 @@ HEADERS += \
 FORMS += \
         MainWindow.ui
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../src/release/ -llog4qt
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../src/debug/ -llog4qt
-else:unix: LIBS += -L$$OUT_PWD/../src/ -llog4qt
+# Link log4qt library
+win32:CONFIG(release, debug|release): LIBS += -L$$_PRO_FILE_PWD_/../lib -llog4qt
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$_PRO_FILE_PWD_/../lib -llog4qtd
+else:unix: LIBS += -L$$OUT_PWD/../src/ -llog4qtd
 INCLUDEPATH += $$_PRO_FILE_PWD_/../include
-DEPENDPATH += $$PWD/../src
+DEPENDPATH += $$_PRO_FILE_PWD_/../src
+
+
+# Copy log4qt library to bin
+copy_dir.target = $$_PRO_FILE_PWD_/../bin
+win32: copy_dir.source = $$_PRO_FILE_PWD_/../lib/*.dll
+else:unix: copy_dir.source = $$_PRO_FILE_PWD_/../lib/*.so
+win32 {
+    copy_dir.target ~= s,/,\\\\,g
+    copy_dir.source ~= s,/,\\\\,g
+}
+QMAKE_POST_LINK = copy $${copy_dir.source} $${copy_dir.target}
