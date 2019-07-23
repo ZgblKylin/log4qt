@@ -2,7 +2,7 @@ QT       += widgets sql
 CONFIG   += c++11
 
 INCLUDEPATH += \
-    $$_PRO_FILE_PWD_/../include
+    $$PWD/../include
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -15,29 +15,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 HEADERS += \
-    ../include\log4qt.h \
-    ../include/processors/LogDebugOutput.h \
-    ../include/processors/LogFileSaver.h \
-    ../include/processors/LogDisplayWidget.h \
-    ../include/processors/LogSqlSaver.h \
-    Common.h \
-    LogFileSaver/LogFileSaveTask.h \
-    LogFileSaver/LogFileSaverPrivate.h \
-    LogDisplay/LogDisplayModel.h \
-    LogDisplay/LogDisplayFilter.h \
-    LogDisplay/LogDisplayWidgetPrivate.h
+    $$PWD/../include\log4qt.h \
+    $$PWD/../include/processors/LogDebugOutput.h \
+    $$PWD/../include/processors/LogFileSaver.h \
+    $$PWD/../include/processors/LogDisplayWidget.h \
+    $$PWD/../include/processors/LogSqlSaver.h \
+    $$PWD/Common.h \
+    $$PWD/LogFileSaver/LogFileSaveTask.h \
+    $$PWD/LogFileSaver/LogFileSaverPrivate.h \
+    $$PWD/LogDisplay/LogDisplayModel.h \
+    $$PWD/LogDisplay/LogDisplayFilter.h \
+    $$PWD/LogDisplay/LogDisplayWidgetPrivate.h
 
 SOURCES += \
-    log4qt.cpp \
-    LogDebugOutput/LogDebugOutput.cpp \
-    LogFileSaver/LogFileSaver.cpp \
-    LogFileSaver/LogFileSaveTask.cpp \
-    LogDisplay/LogDisplayModel.cpp \
-    LogDisplay/LogDisplayFilter.cpp \
-    LogDisplay/LogDisplayWidget.cpp \
-    LogSqlSaver/LogSqlSaver.cpp
+    $$PWD/log4qt.cpp \
+    $$PWD/LogDebugOutput/LogDebugOutput.cpp \
+    $$PWD/LogFileSaver/LogFileSaver.cpp \
+    $$PWD/LogFileSaver/LogFileSaveTask.cpp \
+    $$PWD/LogDisplay/LogDisplayModel.cpp \
+    $$PWD/LogDisplay/LogDisplayFilter.cpp \
+    $$PWD/LogDisplay/LogDisplayWidget.cpp \
+    $$PWD/LogSqlSaver/LogSqlSaver.cpp
 
 DISTFILES += \
-    log4qt.ts
+    $$PWD/log4qt.ts
 
-TRANSLATIONS += log4qt.ts
+TRANSLATIONS += \
+    $$PWD/log4qt.ts
