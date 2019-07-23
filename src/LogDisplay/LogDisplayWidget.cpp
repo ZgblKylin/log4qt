@@ -6,6 +6,7 @@ LogDisplayBuffer::LogDisplayBuffer(QObject* parent)
     : QObject(parent),
       d_ptr(new LogDisplayBufferPrivate(this))
 {
+    start();
 }
 
 LogDisplayBuffer::~LogDisplayBuffer()
