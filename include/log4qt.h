@@ -7,8 +7,10 @@
 #include <QtCore/QString>
 #include <QtCore/QtDebug>
 
-#if defined(LOG4QT_LIBRARY)
+#if defined(LOG4QT_DYNAMIC)
 #  define LOG4QTSHARED_EXPORT Q_DECL_EXPORT
+#elif defined(LOG4QT_STATIC)
+#  define LOG4QTSHARED_EXPORT
 #else
 #  define LOG4QTSHARED_EXPORT Q_DECL_IMPORT
 #endif
