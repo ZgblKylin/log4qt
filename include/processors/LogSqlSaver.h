@@ -21,7 +21,7 @@ public:
     Q_PROPERTY(int transactionInterval READ transactionInterval WRITE setTransactionInterval)
 
     LogSqlSaver(const QSqlDatabase& db, const QString& query, QObject* parent = nullptr);
-    virtual ~LogSqlSaver() override final;
+    virtual ~LogSqlSaver() override;
 
     QString query() const;
     void bindValue(const QString& placeholder, log4qt::Field field);

@@ -17,7 +17,7 @@ public:
     Q_PROPERTY(QtMsgType filter READ filter WRITE setFilter)
 
     explicit LogDebugOutput(QObject* parent = nullptr);
-    virtual ~LogDebugOutput() override final;
+    virtual ~LogDebugOutput() override;
 
     QString pattern() const;
     void setPattern(const QString& pattern);
@@ -27,7 +27,7 @@ public:
 
 protected:
     // ILogProcessor interface
-    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override final;
+    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override;
 
     LogDebugOutputPrivate* d_ptr;
 };

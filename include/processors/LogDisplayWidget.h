@@ -22,7 +22,7 @@ class LOG4QTSHARED_EXPORT LogDisplayBuffer : public QObject, public ILogProcesso
     Q_DECLARE_PRIVATE(LogDisplayBuffer)
 public:
     explicit LogDisplayBuffer(QObject* parent = nullptr);
-    virtual ~LogDisplayBuffer() override final;
+    virtual ~LogDisplayBuffer() override;
 
     // ILogProcessor interface
     virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override;
@@ -58,10 +58,10 @@ class LOG4QTSHARED_EXPORT LogDisplayPage : public QWidget, public ILogProcessor
 
 public:
     explicit LogDisplayPage(QWidget* parent = nullptr);
-    virtual ~LogDisplayPage() override final;
+    virtual ~LogDisplayPage() override;
 
     // ILogProcessor interface
-    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override final;
+    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override;
 
     // Read all buffered message, stop buffer and start page recording
     Q_SLOT void setBuffer(LogDisplayBuffer* buffer);
@@ -127,10 +127,10 @@ class LOG4QTSHARED_EXPORT LogDisplayWidget : public QWidget, public ILogProcesso
 
 public:
     explicit LogDisplayWidget(QWidget* parent = nullptr);
-    virtual ~LogDisplayWidget() override final;
+    virtual ~LogDisplayWidget() override;
 
     // ILogProcessor interface
-    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override final;
+    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override;
 
     // Read all buffered message, stop buffer and start widget recording
     Q_SLOT void setBuffer(LogDisplayBuffer* buffer);

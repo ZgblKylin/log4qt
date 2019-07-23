@@ -63,7 +63,7 @@ public:
     LogFileNormalSaverPrivate(QObject* parent) : LogFileSaverPrivate(parent) {}
 
     // ILogProcessor interface
-    virtual LogFileSaveTask* createTask(const QString& category) override final;
+    virtual LogFileSaveTask* createTask(const QString& category) override;
 
     int flushCount = -1;
 };
@@ -75,7 +75,7 @@ public:
     LogFileMmapSaverPrivate(QObject* parent) : LogFileSaverPrivate(parent) {}
 
     // ILogProcessor interface
-    virtual LogFileSaveTask* createTask(const QString& category) override final;
+    virtual LogFileSaveTask* createTask(const QString& category) override;
 
     qint64 mapSize = 1024 * 1024;
 };

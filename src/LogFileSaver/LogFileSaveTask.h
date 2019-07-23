@@ -59,7 +59,7 @@ public:
 
 private:
     // log4qtFileSaverBase interface
-    virtual void save(const QByteArray& text) override final;
+    virtual void save(const QByteArray& text) override;
 
     int flushCount = -1;    // call flush when flushCount messages written
     int count = 0;          // current written count
@@ -75,7 +75,7 @@ public:
 
 private:
     // log4qtFileSaverBase interface
-    virtual void save(const QByteArray& text) override final;
+    virtual void save(const QByteArray& text) override;
 
     // refresh mmap block
     void map();

@@ -13,7 +13,7 @@ public:
 
 protected:
     // ILogProcessor interface
-    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override final;
+    virtual void log(QtMsgType type, const QMessageLogContext& context, const QString& buf) override;
     int cnt = 0;
 };
 
