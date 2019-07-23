@@ -22,6 +22,7 @@ LogEnginePrivate::LogEnginePrivate()
     qRegisterMetaType<QtMsgType>();
     qRegisterMetaType<log4qt::LogMessage>();
     qRegisterMetaType<QSharedPointer<log4qt::LogMessage>>();
+    qSetMessagePattern(QStringLiteral("%{message}"));
     qInstallMessageHandler(messageHandler);
 }
 
