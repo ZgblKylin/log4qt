@@ -37,8 +37,5 @@ SOURCES += \
     $$PWD/LogDisplay/LogDisplayWidget.cpp \
     $$PWD/LogSqlSaver/LogSqlSaver.cpp
 
-DISTFILES += \
-    $$PWD/log4qt.ts
-
 TRANSLATIONS += \
     $$PWD/log4qt.ts
